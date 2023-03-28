@@ -163,7 +163,7 @@ jobs:
       # Remove files we no longer need to speed up sending context to Docker
       - run: rm build.tar.gz
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@2.11
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: wowanalyzer/wowanalyzer
           username: ${{ secrets.DOCKER_USERNAME }}
