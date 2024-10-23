@@ -14,9 +14,6 @@ import {
 import CoreCombatLogParser from 'parser/core/CombatLogParser';
 import ArcaneTorrent from 'parser/shared/modules/racials/bloodelf/ArcaneTorrent';
 
-//Checklist
-import Checklist from './Checklist/Module';
-
 //Core
 import Abilities from './core/Abilities';
 import AlwaysBeCasting from './core/AlwaysBeCasting';
@@ -69,9 +66,6 @@ class CombatLogParser extends CoreCombatLogParser {
     scorchNormalizer: ScorchNormalizer,
     combustionNormalizer: CombustionNormalizer,
     sunKingsBlessingNormalizer: SunKingsBlessingNormalizer,
-
-    //Checklist
-    checklist: Checklist,
 
     //Guide
     hotStreakGuide: HotStreakGuide,
