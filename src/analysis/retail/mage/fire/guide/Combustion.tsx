@@ -88,21 +88,6 @@ class CombustionGuide extends Analyzer {
     return data;
   }
 
-  get feelTheBurnData() {
-    const data: BoxRowEntry[] = [];
-    this.feelTheBurn.stackUptime.forEach((ftb) => {
-      if (ftb.analysis && ftb.analysis.tooltip) {
-        const tooltip = this.generateGuideTooltip(
-          ftb.analysis.value,
-          ftb.analysis.tooltip,
-          ftb.buffStart,
-        );
-        data.push({ value: ftb.analysis.value, tooltip });
-      }
-    });
-    return data;
-  }
-
   combustionEfficiency() {
     return (
       <CastEfficiencyBar
@@ -190,11 +175,6 @@ class CombustionGuide extends Analyzer {
           <div>
             <strong>Combustion Active Time</strong>
             <PerformanceBoxRow values={this.activeTimeData} />
-            <small>green (good) / red (fail) mouseover the rectangles to see more details</small>
-          </div>
-          <div>
-            <strong>Feel the Burn Max Stack Uptime</strong>
-            <PerformanceBoxRow values={this.feelTheBurnData} />
             <small>green (good) / red (fail) mouseover the rectangles to see more details</small>
           </div>
           <div style={{ color: qualitativePerformanceToColor(this.castDelay), fontSize: '20px' }}>

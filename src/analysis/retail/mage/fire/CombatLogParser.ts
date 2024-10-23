@@ -44,6 +44,14 @@ import ExcessFrost from '../shared/ExcessFrost';
 import FlameAndFrost from '../shared/FlameAndFrost';
 import GloriousIncandescence from '../shared/GloriousIncandescense';
 
+//Guide
+import Guide from './Guide';
+import HotStreakGuide from './guide/HotStreak';
+import HeatingUpGuide from './guide/HeatingUp';
+import CombustionGuide from './guide/Combustion';
+import SunKingsBlessingGuide from './guide/SunKingsBlessing';
+import FeelTheBurnGuide from './guide/FeelTheBurn';
+
 //Items
 
 //Normalizers
@@ -52,11 +60,6 @@ import FlamestrikeNormalizer from './normalizers/Flamestrike';
 import ScorchNormalizer from './normalizers/Scorch';
 import SunKingsBlessingNormalizer from './normalizers/SunKingsBlessingBuffs';
 import CastLinkNormalizer from './normalizers/CastLinkNormalizer';
-import Guide from './Guide';
-import HotStreakGuide from './guide/HotStreak';
-import HeatingUpGuide from './guide/HeatingUp';
-import CombustionGuide from './guide/Combustion';
-import SunKingsBlessingGuide from './guide/SunKingsBlessing';
 
 class CombatLogParser extends CoreCombatLogParser {
   static specModules = {
@@ -72,6 +75,7 @@ class CombatLogParser extends CoreCombatLogParser {
     heatingUpGuide: HeatingUpGuide,
     combustionGuide: CombustionGuide,
     sunKingsBlessingGuide: SunKingsBlessingGuide,
+    feelTheBurnGuide: FeelTheBurnGuide,
 
     //Core
     buffs: Buffs,
