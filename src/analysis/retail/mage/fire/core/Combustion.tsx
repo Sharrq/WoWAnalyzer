@@ -127,17 +127,24 @@ export default class CombustionCasts extends Analyzer {
     return this.totalActiveTime / this.totalCombustDuration;
   }
 
+  get combustTotalSpellCasts() {
+    let total = 0;
+    this.combustCasts.forEach((c) => (total += c.spellCasts.length));
+    return total;
+  }
+
   get castBreakdown() {
     const castArray: number[][] = [];
-    this.combustCasts &&
-      this.combustCasts.forEach((c) => {
-        const index = castArray.findIndex((arr) => arr.includes(c.cast.ability.guid));
+    this.combustCasts.forEach((c) => {
+      c.spellCasts.forEach((s) => {
+        const index = castArray.findIndex((arr) => arr.includes(s.ability.guid));
         if (index !== -1) {
           castArray[index][1] += 1;
         } else {
-          castArray.push([c.cast.ability.guid, 1]);
+          castArray.push([s.ability.guid, 1]);
         }
       });
+    });
     return castArray;
   }
 
@@ -204,7 +211,7 @@ export default class CombustionCasts extends Analyzer {
                       </td>
                       <td style={{ textAlign: 'center' }}>{spell[1]}</td>
                       <td style={{ textAlign: 'center' }}>
-                        {formatPercentage(spell[1] / this.combustCasts.length || 0)}%
+                        {formatPercentage(spell[1] / this.combustTotalSpellCasts)}%
                       </td>
                     </tr>
                   ))}
