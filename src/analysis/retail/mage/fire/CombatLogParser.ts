@@ -52,6 +52,7 @@ import SunKingsBlessingGuide from './guide/SunKingsBlessing';
 import FeelTheBurnGuide from './guide/FeelTheBurn';
 
 //Items
+import HyperthreadWristwraps from './items/HyperthreadWristwraps';
 
 //Normalizers
 import CombustionNormalizer from './normalizers/Combustion';
@@ -109,6 +110,7 @@ class CombatLogParser extends CoreCombatLogParser {
     gloriousIncandescence: GloriousIncandescence,
 
     //Items - Fire
+    hyperthreadWristwraps: HyperthreadWristwraps,
 
     //Talents - Shared
     mirrorImage: MirrorImage,

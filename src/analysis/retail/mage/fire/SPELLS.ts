@@ -138,6 +138,11 @@ const spells = {
     name: "Flame's Fury",
     icon: 'inv_misc_volatilefire',
   },
+  HYPERTHREAD_WRISTWRAPS_CAST: {
+    id: 300142,
+    name: 'Hyperthread Wristwraps',
+    icon: 'inv_bracer_cloth_kultirasdungeon_c_01',
+  },
 } satisfies Record<string, Spell>;
 
 export default spells;
