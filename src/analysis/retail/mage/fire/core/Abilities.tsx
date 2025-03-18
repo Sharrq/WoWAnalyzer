@@ -63,7 +63,7 @@ class Abilities extends CoreAbilities {
           combatant.hasBuff(TALENTS.COMBUSTION_TALENT.id)
             ? 25 / 1.5
             : 25,
-        charges: 2 + combatant.getTalentRank(TALENTS.CALL_OF_THE_SUN_KING_TALENT),
+        charges: 2,
         enabled: combatant.hasTalent(TALENTS.PHOENIX_FLAMES_TALENT),
         castEfficiency: {
           suggestion: true,
@@ -78,8 +78,8 @@ class Abilities extends CoreAbilities {
         cooldown: (haste: any) =>
           combatant.hasTalent(TALENTS.FIERY_RUSH_TALENT) &&
           combatant.hasBuff(TALENTS.COMBUSTION_TALENT.id)
-            ? 10 / 1.5 / (1 + haste)
-            : 10 / (1 + haste),
+            ? 14 / 1.5 / (1 + haste)
+            : 14 / (1 + haste),
         charges: combatant.hasTalent(TALENTS.FLAME_ON_TALENT) ? 3 : 1,
         castEfficiency: {
           suggestion: true,
