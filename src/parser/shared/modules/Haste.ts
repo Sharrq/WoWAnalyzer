@@ -93,10 +93,10 @@ const DEFAULT_HASTE_BUFFS: HasteBuffMap = {
     hastePerStack: 0.01,
   },
   [SPELLS.MANA_ADDICTION_BUFF_FIRE.id]: {
-    hastePerStack: 0.02,
+    hastePerStack: 0.005,
   },
   [SPELLS.MANA_ADDICTION_BUFF_ARCANE.id]: {
-    hastePerStack: 0.03,
+    hastePerStack: 0.005,
   },
   [SPELLS.ARCANE_TEMPO_BUFF.id]: {
     hastePerStack: 0.02,
