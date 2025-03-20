@@ -170,7 +170,7 @@ const spells = {
     icon: 'spell_fire_bluefire',
   },
 
-  //Frostfire Hero Talents
+  //Hero Talents
   FIRE_MASTERY_BUFF: {
     id: 431040,
     name: 'Fire Mastery',
