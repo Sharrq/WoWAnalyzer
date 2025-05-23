@@ -53,6 +53,7 @@ import FeelTheBurnGuide from './guide/FeelTheBurn';
 
 //Items
 import HyperthreadWristwraps from './items/HyperthreadWristwraps';
+import Jackpot from './items/Jackpot';
 
 //Normalizers
 import CombustionNormalizer from './normalizers/Combustion';
@@ -109,9 +110,6 @@ class CombatLogParser extends CoreCombatLogParser {
     flameAndFrost: FlameAndFrost,
     gloriousIncandescence: GloriousIncandescence,
 
-    //Items - Fire
-    hyperthreadWristwraps: HyperthreadWristwraps,
-
     //Talents - Shared
     mirrorImage: MirrorImage,
     elementalBarrier: ElementalBarrier,
@@ -121,6 +119,10 @@ class CombatLogParser extends CoreCombatLogParser {
     tempestBarrier: TempestBarrier,
     masterOfTime: MasterOfTime,
     timeAnomaly: TimeAnomaly,
+
+    //Items - Fire
+    hyperthreadWristwraps: HyperthreadWristwraps,
+    jackpot: Jackpot,
 
     // There's no throughput benefit from casting Arcane Torrent on cooldown
     arcaneTorrent: [ArcaneTorrent, { castEfficiency: null }] as const,

@@ -143,6 +143,11 @@ const spells = {
     name: 'Hyperthread Wristwraps',
     icon: 'inv_bracer_cloth_kultirasdungeon_c_01',
   },
+  ROLLIN_HOT_BUFF: {
+    id: 1219035,
+    name: "Rollin' Hot",
+    icon: 'ability_mage_scorchedearth',
+  },
 } satisfies Record<string, Spell>;
 
 export default spells;

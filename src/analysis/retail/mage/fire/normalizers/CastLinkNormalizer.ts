@@ -5,8 +5,10 @@ import {
   BeginCastEvent,
   CastEvent,
   EventType,
+  GetRelatedEvent,
   GetRelatedEvents,
   HasTarget,
+  RemoveBuffEvent,
 } from 'parser/core/Events';
 import { Options } from 'parser/core/Module';
 import { encodeTargetString } from 'parser/shared/modules/Enemies';
@@ -16,6 +18,7 @@ const EXTENDED_CAST_BUFFER_MS = 150;
 
 const BUFF_APPLY = 'BuffApply';
 const BUFF_REMOVE = 'BuffRemove';
+const BUFF_REFRESH = 'BuffRefresh';
 const CAST_BEGIN = 'CastBegin';
 const SPELL_CAST = 'SpellCast';
 const PRE_CAST = 'PreCast';
@@ -296,6 +299,54 @@ const EVENT_LINKS: EventLink[] = [
     referencedEventId: TALENTS.PHOENIX_FLAMES_TALENT.id,
     referencedEventType: EventType.Damage,
     anyTarget: true,
+    forwardBufferMs: CAST_BUFFER_MS,
+    backwardBufferMs: CAST_BUFFER_MS,
+  },
+  {
+    reverseLinkRelation: BUFF_APPLY,
+    linkingEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    linkingEventType: EventType.ApplyBuff,
+    linkRelation: BUFF_REMOVE,
+    referencedEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    referencedEventType: EventType.RemoveBuff,
+    maximumLinks: 1,
+    forwardBufferMs: 120_000, //Can be perpetually refreshed if lucky, so setting to 2m just in case
+    backwardBufferMs: CAST_BUFFER_MS,
+  },
+  {
+    reverseLinkRelation: BUFF_REFRESH,
+    linkingEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    linkingEventType: EventType.RefreshBuff,
+    linkRelation: BUFF_REMOVE,
+    referencedEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    referencedEventType: EventType.RemoveBuff,
+    maximumLinks: 1,
+    forwardBufferMs: 120_000, //Can be perpetually refreshed if lucky, so setting to 2m just in case
+    backwardBufferMs: CAST_BUFFER_MS,
+  },
+  {
+    reverseLinkRelation: BUFF_APPLY,
+    linkingEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    linkingEventType: EventType.ApplyBuff,
+    linkRelation: BUFF_REFRESH,
+    referencedEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    referencedEventType: EventType.RefreshBuff,
+    additionalCondition(linkingEvent, referencedEvent): boolean {
+      const buffEnd: RemoveBuffEvent | undefined = GetRelatedEvent(linkingEvent, BUFF_REMOVE);
+      return buffEnd && referencedEvent.timestamp < buffEnd.timestamp ? true : false;
+    },
+    anyTarget: true,
+    forwardBufferMs: 120_000,
+    backwardBufferMs: CAST_BUFFER_MS,
+  },
+  {
+    reverseLinkRelation: BUFF_APPLY,
+    linkingEventId: SPELLS.ROLLIN_HOT_BUFF.id,
+    linkingEventType: [EventType.ApplyBuff, EventType.RefreshBuff],
+    linkRelation: SPELL_CAST,
+    referencedEventId: TALENTS.COMBUSTION_TALENT.id,
+    referencedEventType: EventType.Cast,
+    maximumLinks: 1,
     forwardBufferMs: CAST_BUFFER_MS,
     backwardBufferMs: CAST_BUFFER_MS,
   },

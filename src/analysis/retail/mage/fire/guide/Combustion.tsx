@@ -13,18 +13,32 @@ import CombustionCasts from '../core/Combustion';
 import { formatDurationMillisMinSec, formatPercentage } from 'common/format';
 import { GetRelatedEvent } from 'parser/core/Events';
 import CastSummaryAndBreakdown from 'interface/guide/components/CastSummaryAndBreakdown';
+import Kindling from '../talents/Kindling';
+import { ShiftingPower } from '../../shared';
+import Jackpot from '../items/Jackpot';
+import { TIERS } from 'game/TIERS';
 
 class CombustionGuide extends Analyzer {
   static dependencies = {
     combustion: CombustionCasts,
+    kindling: Kindling,
+    shiftingPower: ShiftingPower,
+    jackpot: Jackpot,
   };
 
   protected combustion!: CombustionCasts;
+  protected kindling!: Kindling;
+  protected shiftingPower!: ShiftingPower;
+  protected jackpot!: Jackpot;
 
   hasFlameAccelerant: boolean = this.selectedCombatant.hasTalent(TALENTS.FLAME_ACCELERANT_TALENT);
   hasSunKingsBlessing: boolean = this.selectedCombatant.hasTalent(
     TALENTS.SUN_KINGS_BLESSING_TALENT,
   );
+  hasKindling: boolean = this.selectedCombatant.hasTalent(TALENTS.KINDLING_TALENT);
+  hasShiftingPower: boolean = this.selectedCombatant.hasTalent(TALENTS.SHIFTING_POWER_TALENT);
+  hasUndermine2pc: boolean = this.selectedCombatant.has2PieceByTier(TIERS.TWW2);
+  hasUndermine4pc: boolean = this.selectedCombatant.has4PieceByTier(TIERS.TWW2);
 
   generateGuideTooltip(
     performance: QualitativePerformance,
@@ -76,6 +90,16 @@ class CombustionGuide extends Analyzer {
       performance = QualitativePerformance.Ok;
     }
     return performance;
+  }
+
+  get totalCombustReduction() {
+    let totalReduction = 0;
+    this.log(this.shiftingPower.spellReductions);
+    this.hasKindling && (totalReduction += this.kindling.cooldownReduction);
+    this.hasShiftingPower &&
+      (totalReduction += this.shiftingPower.spellReductions[TALENTS.COMBUSTION_TALENT.id]);
+    this.hasUndermine4pc && (totalReduction += this.jackpot.totalCooldownReductionMS);
+    return totalReduction;
   }
 
   get combustionData() {
@@ -217,6 +241,26 @@ class CombustionGuide extends Analyzer {
         {formatDurationMillisMinSec(this.combustion.totalCombustDuration)}
       </>
     );
+    const combustReductionTooltip = (
+      <>
+        {this.hasKindling
+          ? formatDurationMillisMinSec(this.kindling.cooldownReduction) + ` from Kindling`
+          : `Kindling Not Talented`}
+        <br />
+        {this.hasShiftingPower
+          ? formatDurationMillisMinSec(
+              this.shiftingPower.spellReductions[TALENTS.COMBUSTION_TALENT.id],
+            ) + ` from Shifting Power`
+          : `Shifting Power Not Talented`}
+        <br />
+        {this.hasUndermine4pc
+          ? formatDurationMillisMinSec(this.jackpot.totalCooldownReductionMS) + ` from Jackpot!`
+          : ``}
+        {this.hasUndermine2pc &&
+          !this.hasUndermine4pc &&
+          `Cooldown Reduction from Jackpot! does not show up in Combat Logs unless you also have 4pc so we cannot tell you how much CDR you got from Jackpot. Jackpot CDR is also not included in the total.`}
+      </>
+    );
     const data = (
       <div>
         <RoundedPanel>
@@ -230,7 +274,7 @@ class CombustionGuide extends Analyzer {
           >
             {combustionIcon}{' '}
             <TooltipElement content={activeTimeTooltip}>
-              {this.combustion.overallActivePercent.toFixed(2)}s{' '}
+              {formatPercentage(this.combustion.overallActivePercent, 2)}%{' '}
               <small>Overall Combustion Active Time</small>
             </TooltipElement>
           </div>
@@ -244,7 +288,7 @@ class CombustionGuide extends Analyzer {
           >
             {combustionIcon}{' '}
             <TooltipElement content={castDelayTooltip}>
-              {this.combustion.averageCastDelay.toFixed(2)}s <small>Average Cast Delay</small>
+              {this.combustion.averageCastDelay.toFixed(2)}ms <small>Average Cast Delay</small>
             </TooltipElement>
           </div>
           <div>
@@ -252,6 +296,17 @@ class CombustionGuide extends Analyzer {
               spell={TALENTS.COMBUSTION_TALENT}
               castEntries={this.combustionData}
             />
+          </div>
+          <div
+            style={{
+              fontSize: '20px',
+            }}
+          >
+            {combustionIcon}{' '}
+            <TooltipElement content={combustReductionTooltip}>
+              {formatDurationMillisMinSec(this.totalCombustReduction)}{' '}
+              <small>Total Combustion CDR</small>
+            </TooltipElement>
           </div>
         </RoundedPanel>
       </div>
