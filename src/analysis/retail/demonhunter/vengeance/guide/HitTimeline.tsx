@@ -5,7 +5,7 @@ import { formatDuration, formatNumber } from 'common/format';
 import { SpellLink, Tooltip } from 'interface';
 import Enemies, { encodeTargetString } from 'parser/shared/modules/Enemies';
 import * as MAGIC_SCHOOLS from 'game/MAGIC_SCHOOLS';
-import colorForPerformance from 'common/colorForPerformance';
+import { colorForPerformance } from 'common/colors';
 import { Info } from 'parser/core/metric';
 import uptimeBarSubStatistic from 'parser/ui/UptimeBarSubStatistic';
 import HitBasedAnalyzer, {

@@ -1,4 +1,4 @@
-import colorForPerformance from 'common/colorForPerformance';
+import { colorForPerformance } from 'common/colors';
 import SPELLS from 'common/SPELLS';
 import { SpellLink } from 'interface';
 import { BadColor, SubSection, useAnalyzer, useInfo } from 'interface/guide';

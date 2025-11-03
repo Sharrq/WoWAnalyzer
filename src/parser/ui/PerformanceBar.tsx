@@ -1,4 +1,4 @@
-import colorForPerformance from 'common/colorForPerformance';
+import { colorForPerformance } from 'common/colors';
 
 interface Props {
   percent: number;

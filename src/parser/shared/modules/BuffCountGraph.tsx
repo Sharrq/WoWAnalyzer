@@ -12,7 +12,7 @@ import { Options } from 'parser/core/Module';
 import BaseChart, { formatTime } from 'parser/ui/BaseChart';
 import { VisualizationSpec } from 'react-vega';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import convertColor from 'parser/ui/convertColor';
+import { hexToRgb } from 'common/colors';
 
 /**
  * An abstract implementation producing a graph showing the number of buffs the player has active
@@ -407,7 +407,7 @@ abstract class BuffCountGraph extends Analyzer {
   _convertToInternalTracker(spec: GraphedSpellSpec): GraphedSpellInternalTracker {
     const spells: Spell[] = Array.isArray(spec.spells) ? spec.spells : [spec.spells];
     const name: string = spec.name !== undefined ? spec.name : spells[0].name;
-    const color: string = convertColor(spec.color);
+    const color: string = hexToRgb(spec.color);
     const currCount = 0;
     return { name, spells, color, currCount };
   }

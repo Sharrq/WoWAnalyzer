@@ -5,6 +5,7 @@ import { makeCharacterUrl, makeArmoryUrl } from 'interface/makeAnalyzerUrl';
 import Combatant from 'parser/core/Combatant';
 import StatTracker from 'parser/shared/modules/StatTracker';
 import { Link } from 'react-router-dom';
+import { THEME_COLORS } from 'common/colors';
 
 import './CharacterTab.css';
 import CharacterRace from './CharacterRace';
@@ -45,7 +46,7 @@ const CharacterTab = (props: Props) => {
                   {combatant.characterProfile ? (
                     <>
                       <Link to={makeCharacterUrl(combatant)}>
-                        <WoWAnalyzerIcon mainColor="#FAB700" arrowColor="transparent" /> Character
+                        <WoWAnalyzerIcon mainColor={THEME_COLORS.PRIMARY} arrowColor="transparent" /> Character
                         parses
                       </Link>
                       <br />

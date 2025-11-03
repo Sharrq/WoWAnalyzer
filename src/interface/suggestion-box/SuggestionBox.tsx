@@ -2,6 +2,8 @@ import styled from '@emotion/styled';
 import { BadMark, GoodMark, PerfectMark } from 'interface/guide';
 import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
 import { ReactNode, useState } from 'react';
+import { THEME_COLORS } from 'common/colors';
+
 const Header = styled.div`
   padding: 0.25em 0.75em 0.5em 0.75em;
   border-radius: 4px 4px 0 0;
@@ -29,7 +31,7 @@ const Footer = styled.button`
     outline: none;
   }
 
-  color: #fab700;
+  color: ${THEME_COLORS.PRIMARY};
 `;
 
 const Body = styled.div``;

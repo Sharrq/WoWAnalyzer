@@ -13,6 +13,7 @@ import {
 import { ConditionDescription } from 'parser/shared/metrics/apl/annotate';
 import { useMemo } from 'react';
 import * as React from 'react';
+import { THEME_COLORS } from 'common/colors';
 
 export const AplRuleList = styled.ol`
   padding-left: 1.5rem;
@@ -31,7 +32,7 @@ const AplListItem = styled.li<{ highlighted?: boolean; muted?: boolean }>`
     &::before {
       content: '\\e080';
       font-family: 'Glyphicons Halflings';
-      color: #fab700;
+      color: ${THEME_COLORS.PRIMARY};
       margin-right: 0.5rem;
       font-size: 10px;
     }
@@ -39,7 +40,7 @@ const AplListItem = styled.li<{ highlighted?: boolean; muted?: boolean }>`
     &::after {
       content: '\\e079';
       font-family: 'Glyphicons Halflings';
-      color: #fab700;
+      color: ${THEME_COLORS.PRIMARY};
       margin-left: 0.5rem;
       font-size: 10px;
     }

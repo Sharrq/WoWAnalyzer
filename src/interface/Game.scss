@@ -1,81 +1,115 @@
+// WoW Class colors - SCSS source of truth for compile-time color manipulation
+// These values are exported as CSS custom properties and read by common/colors.ts
+// To modify colors, edit these values and colors.ts will automatically reflect the changes.
+$death-knight-color: #c41f3b;
+$demon-hunter-color: #a330c9;
+$druid-color: #ff7d0a;
+$evoker-color: #33937f;
+$hunter-color: #abd473;
+$mage-color: #69ccf0;
+$monk-color: #00ff98;
+$paladin-color: #f58cba;
+$priest-color: #ffffff;
+$rogue-color: #fff569;
+$shaman-color: #2459ff;
+$warlock-color: #9482c9;
+$warrior-color: #c79c6e;
+
+// Export as CSS custom properties for runtime access
+:root {
+  --class-death-knight-color: #{$death-knight-color};
+  --class-demon-hunter-color: #{$demon-hunter-color};
+  --class-druid-color: #{$druid-color};
+  --class-evoker-color: #{$evoker-color};
+  --class-hunter-color: #{$hunter-color};
+  --class-mage-color: #{$mage-color};
+  --class-monk-color: #{$monk-color};
+  --class-paladin-color: #{$paladin-color};
+  --class-priest-color: #{$priest-color};
+  --class-rogue-color: #{$rogue-color};
+  --class-shaman-color: #{$shaman-color};
+  --class-warlock-color: #{$warlock-color};
+  --class-warrior-color: #{$warrior-color};
+}
+
 .DeathKnight {
-  color: #c41f3b !important;
+  color: $death-knight-color !important;
 }
 .Druid {
-  color: #ff7d0a !important;
+  color: $druid-color !important;
 }
 .Hunter {
-  color: #abd473 !important;
+  color: $hunter-color !important;
 }
 .Mage {
-  color: #69ccf0 !important;
+  color: $mage-color !important;
 }
 .Monk {
-  color: #00ff98 !important;
+  color: $monk-color !important;
 }
 .Paladin {
-  color: #f58cba !important;
+  color: $paladin-color !important;
 }
 .Priest {
-  color: #ffffff !important;
+  color: $priest-color !important;
 }
 .Rogue {
-  color: #fff569 !important;
+  color: $rogue-color !important;
 }
 .Shaman {
-  color: #2459ff !important;
+  color: $shaman-color !important;
 }
 .Warlock {
-  color: #9482c9 !important;
+  color: $warlock-color !important;
 }
 .Warrior {
-  color: #c79c6e !important;
+  color: $warrior-color !important;
 }
 .DemonHunter {
-  color: #a330c9 !important;
+  color: $demon-hunter-color !important;
 }
 .Evoker {
-  color: #33937f !important;
+  color: $evoker-color !important;
 }
 
 .DeathKnight-bg {
-  background-color: #c41f3b !important;
+  background-color: $death-knight-color !important;
 }
 .Druid-bg {
-  background-color: #ff7d0a !important;
+  background-color: $druid-color !important;
 }
 .Hunter-bg {
   background-color: #9ec76b !important;
 }
 .Mage-bg {
-  background-color: #69ccf0 !important;
+  background-color: $mage-color !important;
 }
 .Monk-bg {
-  background-color: #00ff98 !important;
+  background-color: $monk-color !important;
 }
 .Paladin-bg {
-  background-color: #f58cba !important;
+  background-color: $paladin-color !important;
 }
 .Priest-bg {
-  background-color: #ffffff !important;
+  background-color: $priest-color !important;
 }
 .Rogue-bg {
-  background-color: #fff569 !important;
+  background-color: $rogue-color !important;
 }
 .Shaman-bg {
-  background-color: #2459ff !important;
+  background-color: $shaman-color !important;
 }
 .Warlock-bg {
-  background-color: #9482c9 !important;
+  background-color: $warlock-color !important;
 }
 .Warrior-bg {
-  background-color: #c79c6e !important;
+  background-color: $warrior-color !important;
 }
 .DemonHunter-bg {
-  background-color: #a330c9 !important;
+  background-color: $demon-hunter-color !important;
 }
 .Evoker-bg {
-  background-color: #33937f !important;
+  background-color: $evoker-color !important;
 }
 
 .poor {

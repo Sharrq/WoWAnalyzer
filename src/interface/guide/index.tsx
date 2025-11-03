@@ -321,6 +321,14 @@ export const GoodMark = () => <i className="glyphicon glyphicon-ok good-mark" />
 export const OkMark = () => <i className="glyphicon glyphicon-asterisk ok-mark" />;
 export const BadMark = () => <i className="glyphicon glyphicon-remove bad-mark" />;
 
+/**
+ * Performance color constants exported as CSS custom properties.
+ * These are defined in Guide.scss and exported to :root for runtime access.
+ * The color values match PERFORMANCE_COLORS in common/colors.ts.
+ * 
+ * For new code, prefer importing from common/colors.ts directly.
+ * These exports exist for backward compatibility.
+ */
 export const PerfectColor = getComputedStyle(document.documentElement).getPropertyValue(
   '--guide-perfect-color',
 );

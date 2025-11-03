@@ -12,6 +12,7 @@ import { EventType, UpdateSpellUsableEvent, UpdateSpellUsableType } from 'parser
 import BulletGraph, { PerformanceRange } from './BulletGraph';
 import { CooldownWindow } from 'parser/ui/CooldownBar';
 import SegmentedTimeline, { TimelineSegment, TimelineMarker } from './SegmentedTimeline';
+import { THEME_COLORS, STAT_COLORS, UI_COLORS } from 'common/colors';
 
 // Styled Components
 const RibbonContainer = styled.div`
@@ -187,7 +188,7 @@ export default function CastEfficiencyRibbon({
   spell,
   showExplanation = false,
   efficiencyColor = 'white',
-  cooldownColor = '#fab700',
+  cooldownColor = THEME_COLORS.PRIMARY,
   wastedTimeColor,
   compactLayout = false,
   activeWindows,
@@ -243,13 +244,13 @@ export default function CastEfficiencyRibbon({
 
     // Color based on efficiency thresholds
     if (efficiency < majorIssueEfficiency) {
-      return '#dc2626'; // Red - major issue
+      return STAT_COLORS.MAJOR_ISSUE; // Red - major issue
     } else if (efficiency < averageIssueEfficiency) {
-      return '#fb923c'; // Orange - average issue
+      return STAT_COLORS.AVERAGE_ISSUE; // Orange - average issue
     } else if (efficiency < recommendedEfficiency) {
-      return '#fbbf24'; // Yellow - minor issue
+      return STAT_COLORS.MINOR_ISSUE; // Yellow - minor issue
     } else {
-      return '#22c55e'; // Green - good
+      return STAT_COLORS.GOOD; // Green - good
     }
   };
 

@@ -1,5 +1,6 @@
 import { VisualizationSpec } from 'react-vega';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { THEME_COLORS } from 'common/colors';
 
 import BaseChart from './BaseChart';
 
@@ -68,7 +69,7 @@ export default function OneVariableBinomialChart({
           type: 'area',
           color: 'rgba(250, 183, 0, 0.15)',
           line: {
-            color: '#fab700',
+            color: THEME_COLORS.PRIMARY,
             strokeWidth: 1,
           },
         },

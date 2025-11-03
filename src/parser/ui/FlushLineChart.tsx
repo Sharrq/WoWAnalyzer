@@ -1,4 +1,5 @@
 import { Config } from 'vega-lite';
+import { THEME_COLORS } from 'common/colors';
 
 import FooterChart from './FooterChart';
 
@@ -23,7 +24,7 @@ export default function FlushLineChart(props: Props) {
     mark: {
       type: 'area' as const,
       line: {
-        color: '#fab700',
+        color: THEME_COLORS.PRIMARY,
         strokeWidth: 1,
       },
       color: 'rgba(250, 183, 0, 0.15)',

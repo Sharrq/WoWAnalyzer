@@ -10,6 +10,7 @@ import { getUser } from 'interface/selectors/user';
 import { TooltipElement } from 'interface/Tooltip';
 import { useWaSelector } from 'interface/utils/useWaSelector';
 import { usePageView } from 'interface/useGoogleAnalytics';
+import { THEME_COLORS } from 'common/colors';
 
 import './premium.scss';
 
@@ -35,12 +36,12 @@ export function Component() {
             </div>
             <div className="panel-body pad">
               <PremiumIcon
-                style={{ fontSize: '6em', float: 'right', color: '#fab700', marginTop: 0 }}
+                style={{ fontSize: '6em', float: 'right', color: THEME_COLORS.PRIMARY, marginTop: 0 }}
               />
               <div style={{ fontSize: '1.4em', fontWeight: 400 }}>
                 <Trans id="interface.premiumPage.premium.helpout">
                   Help out development and unlock{' '}
-                  <span style={{ color: '#fab700', fontWeight: 700 }}>WoWAnalyzer Premium</span>!
+                  <span style={{ color: THEME_COLORS.PRIMARY, fontWeight: 700 }}>WoWAnalyzer Premium</span>!
                 </Trans>
               </div>
 

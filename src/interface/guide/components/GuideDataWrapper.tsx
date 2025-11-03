@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { SectionContainer, HelperText } from './GuideDivs';
+import { THEME_COLORS } from 'common/colors';
 
 /** Header section containing title and stats */
 const SectionHeader = styled.div`
@@ -24,7 +25,7 @@ const SectionTitle = styled.h3`
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
-  color: #fab700;
+  color: ${THEME_COLORS.PRIMARY};
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
@@ -71,7 +72,7 @@ const CompactHeaderSection = styled.div`
 const CompactTitle = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
-  color: #fab700;
+  color: ${THEME_COLORS.PRIMARY};
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 `;
 

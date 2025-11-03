@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
 import { PropsWithChildren } from 'react';
 import { qualitativePerformanceToColor } from 'interface/guide';
+import { THEME_COLORS } from 'common/colors';
 
 /** A lighter colored panel with rounded edges */
 export const RoundedPanel = styled.div`
@@ -183,7 +184,7 @@ export const NavButton = styled.button<{ disabled?: boolean }>`
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
-  color: ${(props) => (props.disabled ? '#666' : '#fab700')};
+  color: ${(props) => (props.disabled ? '#666' : THEME_COLORS.PRIMARY)};
   font-size: 2rem;
   font-weight: 600;
   transition: all 0.2s ease;
@@ -197,7 +198,7 @@ export const NavButton = styled.button<{ disabled?: boolean }>`
 
   &:hover:not(:disabled) {
     background: rgba(250, 183, 0, 0.2);
-    border-color: #fab700;
+    border-color: ${THEME_COLORS.PRIMARY};
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   }
 
@@ -237,6 +238,6 @@ export const ScrollableContainer = styled.div`
 
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: #fab700;
+    background-color: ${THEME_COLORS.PRIMARY};
   }
 `;

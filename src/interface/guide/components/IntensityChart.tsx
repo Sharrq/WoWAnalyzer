@@ -7,86 +7,13 @@ import { useState } from 'react';
 import { StatCard, StatValue, StatLabel } from 'interface/guide/components/GuideDivs';
 import Heatmap, { HeatmapRow, HeatmapColorThreshold } from './Heatmap';
 import GuideDataWrapper from './GuideDataWrapper';
+import { generateGradient, roundThreshold, THEME_COLORS, UI_COLORS } from 'common/colors';
 
 interface DamageOrHealEvent {
   timestamp: number;
   amount: number;
   targetID: number;
   targetInstance?: number;
-}
-
-interface HSL {
-  h: number;
-  s: number;
-  l: number;
-}
-
-function parseColor(color: string): HSL {
-  // Handle HSL format
-  const hslMatch = color.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
-  if (hslMatch) {
-    return {
-      h: parseInt(hslMatch[1]),
-      s: parseInt(hslMatch[2]),
-      l: parseInt(hslMatch[3]),
-    };
-  }
-
-  // Handle hex format
-  const hexMatch = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-  if (hexMatch) {
-    const r = parseInt(hexMatch[1], 16) / 255;
-    const g = parseInt(hexMatch[2], 16) / 255;
-    const b = parseInt(hexMatch[3], 16) / 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    const l = (max + min) / 2;
-
-    if (max === min) {
-      return { h: 0, s: 0, l: Math.round(l * 100) };
-    }
-
-    const d = max - min;
-    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    let h = 0;
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-
-    return {
-      h: Math.round(h * 360),
-      s: Math.round(s * 100),
-      l: Math.round(l * 100),
-    };
-  }
-
-  // Default fallback to fire orange
-  return { h: 35, s: 90, l: 55 };
-}
-
-function generateGradient(baseColor: string): string[] {
-  const { h, s, l } = parseColor(baseColor);
-
-  return [
-    // Lightest - tier 1
-    `hsl(${h}, ${Math.max(0, s - 10)}%, ${Math.min(100, l + 20)}%)`,
-    // Lighter - tier 2
-    `hsl(${h}, ${Math.max(0, s - 5)}%, ${Math.min(100, l + 10)}%)`,
-    // Base - tier 3
-    `hsl(${h}, ${s}%, ${l}%)`,
-    // Darker - tier 4
-    `hsl(${Math.max(0, h - 10)}, ${s}%, ${Math.max(0, l - 10)}%)`,
-    // Darkest - tier 5
-    `hsl(${Math.max(0, h - 20)}, ${s}%, ${Math.max(0, l - 20)}%)`,
-  ];
-}
-
-function roundThreshold(value: number): number {
-  if (value > 100000) return Math.round(value / 10000) * 10000;
-  if (value > 50000) return Math.round(value / 5000) * 5000;
-  return Math.round(value / 1000) * 1000;
 }
 
 interface TargetData {
@@ -139,7 +66,7 @@ export default function IntensityChart({
   spell,
   data,
   chartType = 'DPS',
-  baseColor = '#fab700',
+  baseColor = THEME_COLORS.PRIMARY,
   headerOverride,
   uptimePercent,
   blockCount = 60,
@@ -252,13 +179,13 @@ export default function IntensityChart({
   const statsContent = (
     <>
       <Tooltip content={`Average ${unitLabel} when active`}>
-        <StatCard color="#3b82f6">
+        <StatCard color={UI_COLORS.INFO}>
           <StatValue>{formatNumber(avgValue)}</StatValue>
           <StatLabel>Avg {unitLabel}</StatLabel>
         </StatCard>
       </Tooltip>
       <Tooltip content={`Maximum ${unitLabel} reached`}>
-        <StatCard color="#dc2626">
+        <StatCard color={UI_COLORS.ERROR}>
           <StatValue>{formatNumber(maxValue)}</StatValue>
           <StatLabel>Max {unitLabel}</StatLabel>
         </StatCard>
@@ -337,9 +264,9 @@ const ToggleContainer = styled.div`
 const ToggleButton = styled.button<{ active: boolean }>`
   padding: 8px 16px;
   background: ${(props) => (props.active ? 'rgba(250, 183, 0, 0.3)' : 'rgba(0, 0, 0, 0.3)')};
-  border: 1px solid ${(props) => (props.active ? '#fab700' : 'rgba(255, 255, 255, 0.15)')};
+  border: 1px solid ${(props) => (props.active ? THEME_COLORS.PRIMARY : 'rgba(255, 255, 255, 0.15)')};
   border-radius: 4px;
-  color: ${(props) => (props.active ? '#fab700' : 'rgba(255, 255, 255, 0.7)')};
+  color: ${(props) => (props.active ? THEME_COLORS.PRIMARY : 'rgba(255, 255, 255, 0.7)')};
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
@@ -350,6 +277,6 @@ const ToggleButton = styled.button<{ active: boolean }>`
   &:hover {
     background: ${(props) =>
       props.active ? 'rgba(250, 183, 0, 0.4)' : 'rgba(255, 255, 255, 0.1)'};
-    border-color: ${(props) => (props.active ? '#fab700' : 'rgba(255, 255, 255, 0.3)')};
+    border-color: ${(props) => (props.active ? THEME_COLORS.PRIMARY : 'rgba(255, 255, 255, 0.3)')};
   }
 `;

@@ -1,7 +1,19 @@
-$primaryColor: #fab700; // #f86725?
+// Theme colors - SCSS source of truth for compile-time color manipulation
+// These values are exported as CSS custom properties and read by common/colors.ts
+// To modify colors, edit these values and colors.ts will automatically reflect the changes.
+$primaryColor: #fab700;
 $muted: hsla(44, 6%, 78%, 0.75);
 $red: #ac1f39;
 $panelColor: hsla(44, 3%, 11%, 1);
 $backgroundColor: hsl(44, 7%, 8%);
+$textColor: #f3eded;
 
-@value primaryColor #{$primaryColor};
+// Export as CSS custom properties for runtime access
+:root {
+  --theme-primary-color: #{$primaryColor};
+  --theme-muted-color: #{$muted};
+  --theme-red-color: #{$red};
+  --theme-panel-color: #{$panelColor};
+  --theme-background-color: #{$backgroundColor};
+  --theme-text-color: #{$textColor};
+}

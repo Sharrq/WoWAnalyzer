@@ -1,23 +1,24 @@
 import fetchWcl from 'common/fetchWclApi';
+import { CLASS_COLORS, hexWithAlpha } from 'common/colors';
 import PropTypes from 'prop-types';
 import { PureComponent } from 'react';
 
 import RaidHealthChart from './RaidHealthChart';
 
 const CLASS_CHART_LINE_COLORS = {
-  DeathKnight: 'rgba(196, 31, 59, 0.6)',
-  Druid: 'rgba(255, 125, 10, 0.6)',
-  Evoker: 'rgba(51, 147, 127, 0.6)',
-  Hunter: 'rgba(171, 212, 115, 0.6)',
-  Mage: 'rgba(105, 204, 240, 0.6)',
-  Monk: 'rgba(0, 255, 152, 0.6)',
-  Paladin: 'rgba(245, 140, 186, 0.6)',
-  Priest: 'rgba(255, 255, 255, 0.6)',
-  Rogue: 'rgba(255, 245, 105, 0.6)',
-  Shaman: 'rgba(36, 89, 255, 0.6)',
-  Warlock: 'rgba(148, 130, 201, 0.6)',
-  Warrior: 'rgba(199, 156, 110, 0.6)',
-  DemonHunter: 'rgba(163, 48, 201, 0.6)',
+  DeathKnight: hexWithAlpha(CLASS_COLORS.DEATH_KNIGHT, 0.6),
+  Druid: hexWithAlpha(CLASS_COLORS.DRUID, 0.6),
+  Evoker: hexWithAlpha(CLASS_COLORS.EVOKER, 0.6),
+  Hunter: hexWithAlpha(CLASS_COLORS.HUNTER, 0.6),
+  Mage: hexWithAlpha(CLASS_COLORS.MAGE, 0.6),
+  Monk: hexWithAlpha(CLASS_COLORS.MONK, 0.6),
+  Paladin: hexWithAlpha(CLASS_COLORS.PALADIN, 0.6),
+  Priest: hexWithAlpha(CLASS_COLORS.PRIEST, 0.6),
+  Rogue: hexWithAlpha(CLASS_COLORS.ROGUE, 0.6),
+  Shaman: hexWithAlpha(CLASS_COLORS.SHAMAN, 0.6),
+  Warlock: hexWithAlpha(CLASS_COLORS.WARLOCK, 0.6),
+  Warrior: hexWithAlpha(CLASS_COLORS.WARRIOR, 0.6),
+  DemonHunter: hexWithAlpha(CLASS_COLORS.DEMON_HUNTER, 0.6),
 };
 
 class Graph extends PureComponent {

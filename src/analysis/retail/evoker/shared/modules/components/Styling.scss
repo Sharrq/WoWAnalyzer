@@ -2,7 +2,7 @@
 @use 'interface/Theme.scss';
 
 .button {
-  background-color: #fab700;
+  background-color: Theme.$primaryColor;
   color: #211510;
   line-height: 16.8px;
   font-size: 14px;
@@ -13,7 +13,7 @@
   font-weight: 600;
 
   &:hover {
-    background-color: color.adjust($color: #fab700, $lightness: -7%);
+    background-color: color.adjust($color: Theme.$primaryColor, $lightness: -7%);
   }
 }
 

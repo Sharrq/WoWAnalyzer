@@ -6,6 +6,7 @@ import EmbeddedTimelineContainer, {
 } from 'interface/report/Results/Timeline/EmbeddedTimeline';
 import Casts from 'interface/report/Results/Timeline/Casts';
 import styled from '@emotion/styled';
+import { THEME_COLORS } from 'common/colors';
 
 export interface CastTimelineEntry<T = unknown> {
   data: T;
@@ -124,7 +125,7 @@ const HeaderTitle = styled.h3`
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #fab700;
+  color: ${THEME_COLORS.PRIMARY};
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
@@ -179,7 +180,7 @@ const NavButton = styled.button`
 
   &:hover {
     background: rgba(250, 183, 0, 0.15);
-    border-color: #fab700;
+    border-color: ${THEME_COLORS.PRIMARY};
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   }
@@ -206,6 +207,6 @@ const TimelineScrollContainer = styled.div`
 
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: #fab700;
+    background-color: ${THEME_COLORS.PRIMARY};
   }
 `;

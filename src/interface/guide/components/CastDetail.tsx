@@ -3,6 +3,7 @@ import { Tooltip } from 'interface';
 import { qualitativePerformanceToColor, PerformanceMark } from 'interface/guide';
 import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
 import { useState, useMemo, useCallback } from 'react';
+import { THEME_COLORS } from 'common/colors';
 import { TipBox } from './TipBox';
 import {
   StatsRow,
@@ -328,5 +329,5 @@ const CastHeader = styled.div`
 const CastTitle = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: #fab700;
+  color: ${THEME_COLORS.PRIMARY};
 `;

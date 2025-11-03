@@ -3,6 +3,7 @@ import { useEvents } from 'interface/guide';
 import { EventType } from 'parser/core/Events';
 import { Info } from 'parser/core/metric';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { THEME_COLORS } from 'common/colors';
 
 interface TimelineContext {
   /**
@@ -330,7 +331,7 @@ function PhaseHeader(): JSX.Element {
             textAnchor="middle"
             x={x(segment.start) + width(segment.start, segment.end) / 2}
             y={16}
-            fill="#f3eded"
+            fill={THEME_COLORS.TEXT}
             style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {segment.name.split(':')[0]}

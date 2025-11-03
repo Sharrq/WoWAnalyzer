@@ -1,19 +1,22 @@
 @use 'interface/Theme';
 
-// standard colors for perf
+// Performance colors - SCSS source of truth for compile-time color manipulation
+// These values are exported as CSS custom properties and read by common/colors.ts
+// To modify colors, edit these values and colors.ts will automatically reflect the changes.
 $perfect-perf-color: #2090c0;
 $good-perf-color: #4ec04e;
+$decent-perf-color: #a6c34c;
 $ok-perf-color: #ffc84a;
 $bad-perf-color: #ac1f39;
-// extra colors for some special case stuff
 $very-bad-perf-color: #661111;
-$mediocre-perf-color: #dd5533;
+$mediocre-perf-color: #df7102;
 $available-cd-color: #696864;
 
-// for export
+// Export as CSS custom properties for runtime access
 :root {
   --guide-perfect-color: #{$perfect-perf-color};
   --guide-good-color: #{$good-perf-color};
+  --guide-decent-color: #{$decent-perf-color};
   --guide-ok-color: #{$ok-perf-color};
   --guide-bad-color: #{$bad-perf-color};
   --guide-very-bad-color: #{$very-bad-perf-color};

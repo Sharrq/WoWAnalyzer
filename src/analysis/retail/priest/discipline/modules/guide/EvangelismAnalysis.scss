@@ -1,10 +1,12 @@
+@use 'interface/guide/Guide.scss';
+
 .evang__icon {
   width: 44px !important;
   height: 44px !important;
 }
 
 .evang__icon.--fail {
-  border: 4px solid #ac1f39;
+  border: 4px solid Guide.$bad-perf-color;
 }
 
 .evang__cast-list {

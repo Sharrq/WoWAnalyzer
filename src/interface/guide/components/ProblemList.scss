@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'interface/Theme.scss';
+@use 'interface/guide/Guide.scss';
 
 .problem-list-container {
   header {
@@ -32,7 +33,7 @@
     font-size: 2em;
 
     i {
-      color: #4ec04e;
+      color: Guide.$good-perf-color;
       margin-right: 0.5em;
     }
   }
