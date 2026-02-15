@@ -1,6 +1,7 @@
 import { COMBUSTION_END_BUFFER, SharedCode } from 'analysis/retail/mage/shared';
 import { formatPercentage } from 'common/format';
 import SPELLS from 'common/SPELLS';
+import Spell from 'common/SPELLS/Spell';
 import TALENTS from 'common/TALENTS/mage';
 import HIT_TYPES from 'game/HIT_TYPES';
 import SpellIcon from 'interface/SpellIcon';
@@ -59,23 +60,24 @@ export default class HeatingUp extends Analyzer {
     const ftbLastRefresh = ftbBuff && GetRelatedEvent(event, 'lastBuffRefresh');
     const ftbDuration = ftbLastRefresh && event.timestamp - ftbLastRefresh.timestamp;
 
-    let buff;
+    let activeCritBuffs: Spell[] = [];
     if (this.hasScorch && targetHealth && targetHealth < 0.3) {
-      buff = { active: true, buffId: SPELLS.SCORCH.id };
-    } else if (this.hasFirestarter && targetHealth && targetHealth > 0.9) {
-      buff = { active: true, buffId: TALENTS.FIRESTARTER_TALENT.id };
-    } else if (
+      activeCritBuffs.push(SPELLS.SCORCH);
+    }
+    if (this.hasFirestarter && targetHealth && targetHealth > 0.9) {
+      activeCritBuffs.push(TALENTS.FIRESTARTER_TALENT);
+    }
+    if (
       this.selectedCombatant.hasBuff(TALENTS.COMBUSTION_TALENT.id) ||
       this.selectedCombatant.hasBuff(
         TALENTS.COMBUSTION_TALENT.id,
         event.timestamp - COMBUSTION_END_BUFFER,
       )
     ) {
-      buff = { active: true, buffId: TALENTS.COMBUSTION_TALENT.id };
-    } else if (this.selectedCombatant.hasBuff(SPELLS.HYPERTHERMIA_BUFF.id)) {
-      buff = { active: true, buffId: SPELLS.HYPERTHERMIA_BUFF.id };
-    } else {
-      buff = { active: false };
+      activeCritBuffs.push(TALENTS.COMBUSTION_TALENT);
+    }
+    if (this.selectedCombatant.hasBuff(SPELLS.HYPERTHERMIA_BUFF.id)) {
+      activeCritBuffs.push(SPELLS.HYPERTHERMIA_BUFF);
     }
 
     this.heatingUpCrits.push({
@@ -83,7 +85,7 @@ export default class HeatingUp extends Analyzer {
       damage: damageEvent,
       hasHeatingUp: this.selectedCombatant.hasBuff(SPELLS.HEATING_UP.id),
       hasHotStreak: this.selectedCombatant.hasBuff(SPELLS.HOT_STREAK.id),
-      critBuff: buff,
+      critBuff: activeCritBuffs,
       ftbDuration,
       charges: this.spellUsable.chargesAvailable(event.ability.guid),
       timeTillCapped: this.spellUsable.cooldownRemaining(event.ability.guid),
@@ -98,7 +100,8 @@ export default class HeatingUp extends Analyzer {
 
   get fireBlastWithoutHeatingUp() {
     return this.heatingUpCrits.filter(
-      (c) => c.cast.ability.guid === SPELLS.FIRE_BLAST.id && !c.hasHeatingUp && !c.critBuff.active,
+      (c) =>
+        c.cast.ability.guid === SPELLS.FIRE_BLAST.id && !c.hasHeatingUp && c.critBuff.length > 0,
     ).length;
   }
 
@@ -165,7 +168,7 @@ export interface HeatingUpCrits {
   damage: DamageEvent;
   hasHeatingUp: boolean;
   hasHotStreak: boolean;
-  critBuff: { active: boolean; buffId?: number };
+  critBuff: Spell[];
   ftbDuration?: number;
   charges: number;
   timeTillCapped: number;
