@@ -7,16 +7,20 @@ import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
 import Analyzer from 'parser/core/Analyzer';
 import CastSummary, { type CastEvaluation } from 'interface/guide/components/CastSummary';
 import GuideSection from 'interface/guide/components/GuideSection';
+import { DamageContribution } from 'interface/guide/components';
 import { EventType, GetRelatedEvent } from 'parser/core/Events';
 
 import CombustionCasts from '../core/Combustion';
+import CombustionDamageTracker from '../core/CombustionDamageTracker';
 
 class CombustionGuide extends Analyzer {
   static dependencies = {
     combustion: CombustionCasts,
+    combustionDamageTracker: CombustionDamageTracker,
   };
 
   protected combustion!: CombustionCasts;
+  protected combustionDamageTracker!: CombustionDamageTracker;
 
   private evaluateCombustionCast(cb: any): CastEvaluation {
     const combustDuration = cb.remove - cb.cast.timestamp;
@@ -137,6 +141,23 @@ class CombustionGuide extends Analyzer {
           spell={TALENTS.COMBUSTION_TALENT}
           casts={this.combustion.combustCasts.map((cast) => this.evaluateCombustionCast(cast))}
           showBreakdown
+        />
+        <DamageContribution
+          title="Damage During Combustion"
+          spells={[
+            { spell: TALENTS.PYROBLAST_TALENT, color: '#ff6600' },
+            { spell: SPELLS.FIRE_BLAST, color: '#ff9933' },
+            { spell: SPELLS.SCORCH, color: '#ffcc00' },
+            { spell: SPELLS.IGNITE, color: '#ff4400' },
+            { spell: SPELLS.FLAMESTRIKE, color: '#cc3300' },
+            { spell: TALENTS.METEOR_TALENT, color: '#391003' },
+            { spell: SPELLS.ARCANE_PHOENIX_DAMAGE, color: '#7b1d92ff' },
+          ]}
+          calculateContribution={(spellId: number) =>
+            this.combustionDamageTracker.getDamageForSpell(spellId)
+          }
+          otherColor="#666666"
+          helperText="This shows the damage breakdown during Combustion windows. Focus on maximizing Pyroblast damage while efficiently using Fire Blast and Phoenix Flames charges."
         />
       </GuideSection>
     );

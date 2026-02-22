@@ -1,93 +1,134 @@
 import { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { SectionContainer, HelperText } from './GuideDivs';
+import { iconUrl } from 'interface/Icon';
 
-/** Header section containing title and stats */
-const SectionHeader = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: stretch;
-  margin-bottom: 4px;
+/** Compact mode: Icon+title area laid out as a 2-col grid so icon spans both rows */
+const CompactTitleGroup = styled.div`
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  min-width: 180px;
 `;
 
-/** Column for title and labels */
+/** Icon cell spanning both title and subtitle rows */
+const CompactIconCell = styled.div`
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: block;
+  }
+`;
+
+/** Header: single row with title+subtitle on left, pills on right */
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+`;
+
+/** Bare wrapper — matches SectionContainer spacing without the box styling */
+const BareSection = styled.div`
+  margin-bottom: 10px;
+`;
+
+/** Left side: title + subtitle stacked vertically */
 const TitleColumn = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2px;
 `;
 
 /** Main title/header for guide sections */
 const SectionTitle = styled.h3`
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #fab700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 `;
 
-/** Small label text (e.g., "Timeline", "Performance") */
+/** Inline subtitle badge — sits next to the title */
 const Label = styled.div`
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
 `;
 
-/** Row for stat cards */
+/** Row for stat pills */
 const StatsRow = styled.div`
   display: flex;
-  gap: 8px;
-  align-items: flex-end;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
 `;
 
-/** Column container for stats and optional helper text */
+/** Right side wrapper for pills + optional helper text */
 const StatsColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   align-items: flex-end;
 `;
 
 /** Compact mode: Single line layout with header | stats | content */
 const CompactContainer = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 `;
 
-/** Compact mode: Header section (title + subtitle) */
+/** Compact mode: Header section (title + subtitle stacked) -- used when no icon */
 const CompactHeaderSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 200px;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 180px;
 `;
 
-/** Compact mode: Title styling (yellow, same as standard) */
+/** Compact mode: Title styling */
 const CompactTitle = styled.div`
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #fab700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 `;
 
-/** Compact mode: Subtitle/label styling (same as standard Label) */
+/** Compact mode: Subtitle/label styling */
 const CompactSubtitle = styled.div`
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.38);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
 `;
 
 /** Compact mode: Stats section */
 const CompactStatsSection = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 `;
 
@@ -109,8 +150,12 @@ interface GuideDataWrapperProps {
   statsHelperText?: string | ReactNode;
   /** Optional helper text to display below the header */
   helperText?: string | ReactNode;
+  /** Optional icon URL to display before the title in compact mode */
+  icon?: string;
   /** The main visualization content */
   children?: ReactNode;
+  /** If true, renders without the outer SectionContainer border/background */
+  bare?: boolean;
   /** Optional CSS class name */
   className?: string;
   /** If true, uses a compact horizontal layout with title on left and stats on right */
@@ -146,45 +191,72 @@ export default function GuideDataWrapper({
   helperText,
   children,
   className,
+  bare = false,
   compact = false,
+  icon,
 }: GuideDataWrapperProps) {
+  const header = (
+    <SectionHeader>
+      <TitleColumn>
+        <SectionTitle>{title}</SectionTitle>
+        {subtitle && <Label>{subtitle}</Label>}
+      </TitleColumn>
+      {stats && (
+        <StatsColumn>
+          <StatsRow>{stats}</StatsRow>
+          {statsHelperText && <HelperText style={{ marginTop: 0 }}>{statsHelperText}</HelperText>}
+        </StatsColumn>
+      )}
+    </SectionHeader>
+  );
+
   // Compact layout: Single line with header | stats | content
   if (compact) {
-    return (
-      <SectionContainer className={className}>
-        {helperText && <HelperText style={{ marginBottom: '8px' }}>{helperText}</HelperText>}
+    const titleBlock = icon ? (
+      <CompactTitleGroup>
+        <CompactIconCell>
+          <img src={iconUrl(icon)} alt="" />
+        </CompactIconCell>
+        <CompactTitle style={{ gridColumn: 2, gridRow: 1 }}>{title}</CompactTitle>
+        {subtitle && (
+          <CompactSubtitle style={{ gridColumn: 2, gridRow: 2 }}>{subtitle}</CompactSubtitle>
+        )}
+      </CompactTitleGroup>
+    ) : (
+      <CompactHeaderSection>
+        <CompactTitle>{title}</CompactTitle>
+        {subtitle && <CompactSubtitle>{subtitle}</CompactSubtitle>}
+      </CompactHeaderSection>
+    );
+    const inner = (
+      <>
+        {helperText && <HelperText style={{ marginBottom: '6px' }}>{helperText}</HelperText>}
         <CompactContainer>
-          <CompactHeaderSection>
-            <CompactTitle>{title}</CompactTitle>
-            {subtitle && <CompactSubtitle>{subtitle}</CompactSubtitle>}
-          </CompactHeaderSection>
+          {titleBlock}
           {stats && <CompactStatsSection>{stats}</CompactStatsSection>}
           {children && <CompactContentSection>{children}</CompactContentSection>}
         </CompactContainer>
-      </SectionContainer>
+      </>
+    );
+    return bare ? (
+      <BareSection className={className}>{inner}</BareSection>
+    ) : (
+      <SectionContainer className={className}>{inner}</SectionContainer>
     );
   }
 
-  // Standard layout: Vertical with title on top, stats on side
-  return (
-    <SectionContainer className={className}>
-      <SectionHeader>
-        <TitleColumn>
-          <SectionTitle>{title}</SectionTitle>
-          {helperText && (
-            <HelperText style={{ marginTop: 0, marginBottom: 0 }}>{helperText}</HelperText>
-          )}
-          {subtitle && <Label style={{ marginTop: '4px' }}>{subtitle}</Label>}
-        </TitleColumn>
-        {stats && (
-          <StatsColumn>
-            <StatsRow>{stats}</StatsRow>
-            {statsHelperText && <HelperText>{statsHelperText}</HelperText>}
-          </StatsColumn>
-        )}
-      </SectionHeader>
-
+  // Standard layout
+  const inner = (
+    <>
+      {helperText && <HelperText style={{ marginBottom: '6px' }}>{helperText}</HelperText>}
+      {header}
       {children}
-    </SectionContainer>
+    </>
+  );
+
+  return bare ? (
+    <BareSection className={className}>{inner}</BareSection>
+  ) : (
+    <SectionContainer className={className}>{inner}</SectionContainer>
   );
 }

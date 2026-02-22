@@ -1,7 +1,7 @@
 import { type JSX } from 'react';
 import SPELLS from 'common/SPELLS';
 import TALENTS from 'common/TALENTS/mage';
-import { SpellLink } from 'interface';
+import { SpellLink, SpellIcon } from 'interface';
 import { formatPercentage, formatDuration, formatNumber } from 'common/format';
 import GuideSection from 'interface/guide/components/GuideSection';
 import CastDetail, {
@@ -75,8 +75,21 @@ class ArcaneBarrageGuide extends Analyzer {
     if (cast.precast) {
       stats.push({
         label: 'Precast Spell',
-        value: cast.precast.ability.name,
-        tooltip: `The spell cast immediately before Arcane Barrage.`,
+        value: (
+          <SpellIcon
+            spell={cast.precast.ability.guid}
+            noLink
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 4,
+              display: 'block',
+              margin: 'auto',
+              verticalAlign: 'top',
+            }}
+          />
+        ),
+        tooltip: `Precast: ${cast.precast.ability.name}`,
       });
     }
 

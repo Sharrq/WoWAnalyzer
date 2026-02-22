@@ -1,8 +1,9 @@
+import type { JSX } from 'react';
 import styled from '@emotion/styled';
 import Spell from 'common/SPELLS/Spell';
 import { formatPercentage, formatNumber } from 'common/format';
 import GuideDataWrapper from './GuideDataWrapper';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 interface SpellContribution {
   spell: Spell;
@@ -48,6 +49,9 @@ export default function DamageContribution({
   // Default title to "Damage Contribution" if not provided
   const displayTitle = title ?? 'Damage Contribution';
 
+  // Track which spell is being hovered (null means none, -1 for "Other")
+  const [hoveredSpellId, setHoveredSpellId] = useState<number | null>(null);
+
   // Calculate contributions for each spell
   const contributions: SpellContribution[] = spells
     .map(({ spell, color }) => ({
@@ -90,132 +94,193 @@ export default function DamageContribution({
       stats={stats}
       helperText={helperText}
     >
-      <ChartContainer>
+      <BarContainer>
         <StackedBarContainer>
-          {allContributions.map((contrib) => {
-            const percentage = (contrib.amount / total) * 100;
-            return (
-              <StackedSegment
-                key={contrib.isOther ? 'other' : contrib.spell.id}
-                $color={contrib.color}
-                $width={percentage}
-                title={`${contrib.isOther ? 'Other' : contrib.spell.name}: ${formatNumber(contrib.amount)} (${formatPercentage(percentage / 100, 1)}%)`}
-              />
-            );
-          })}
+          {
+            allContributions.reduce<{ elements: JSX.Element[]; cumulativeLeft: number }>(
+              (acc, contrib) => {
+                const percentage = (contrib.amount / total) * 100;
+                const spellId = contrib.isOther ? -1 : contrib.spell.id;
+                const isHovered = hoveredSpellId === spellId;
+                const shouldDim = hoveredSpellId !== null && !isHovered;
+
+                acc.elements.push(
+                  <StackedSegment
+                    key={contrib.isOther ? 'other' : contrib.spell.id}
+                    $color={contrib.color}
+                    $width={percentage}
+                    $left={acc.cumulativeLeft}
+                    $dimmed={shouldDim}
+                    onMouseEnter={() => setHoveredSpellId(spellId)}
+                    onMouseLeave={() => setHoveredSpellId(null)}
+                    title={`${contrib.isOther ? 'Other' : contrib.spell.name}: ${formatNumber(contrib.amount)} (${formatPercentage(percentage / 100, 1)}%)`}
+                  />,
+                );
+                acc.cumulativeLeft += percentage;
+                return acc;
+              },
+              { elements: [], cumulativeLeft: 0 },
+            ).elements
+          }
         </StackedBarContainer>
+      </BarContainer>
+      <LegendSection>
         <LegendContainer>
           {allContributions.map((contrib) => {
             const percentage = contrib.amount / total;
+            const spellId = contrib.isOther ? -1 : contrib.spell.id;
+            const isHovered = hoveredSpellId === spellId;
+            const shouldDim = hoveredSpellId !== null && !isHovered;
+
             return (
-              <LegendItem key={contrib.isOther ? 'other' : contrib.spell.id}>
-                <LegendColorBox color={contrib.color} />
-                <LegendContent>
-                  <LegendSpell>
-                    {contrib.isOther ? <span>Other</span> : contrib.spell.name}
-                  </LegendSpell>
-                  <LegendStats>
-                    <LegendValue>{formatNumber(contrib.amount)}</LegendValue>
-                    <LegendPercentage>{formatPercentage(percentage, 1)}%</LegendPercentage>
-                  </LegendStats>
-                </LegendContent>
-              </LegendItem>
+              <GridCard
+                key={contrib.isOther ? 'other' : contrib.spell.id}
+                color={contrib.color}
+                $dimmed={shouldDim}
+                onMouseEnter={() => setHoveredSpellId(spellId)}
+                onMouseLeave={() => setHoveredSpellId(null)}
+              >
+                {!contrib.isOther && contrib.spell.icon && (
+                  <SpellIcon
+                    src={`https://assets.rpglogs.com/img/warcraft/abilities/${contrib.spell.icon}.jpg`}
+                    alt={contrib.spell.name}
+                  />
+                )}
+                <GridContent>
+                  <GridSpellName>{contrib.isOther ? 'Other' : contrib.spell.name}</GridSpellName>
+                  <GridStats>
+                    <GridAmount>{formatNumber(contrib.amount)}</GridAmount>
+                    <GridPercentage>{formatPercentage(percentage, 1)}%</GridPercentage>
+                  </GridStats>
+                </GridContent>
+              </GridCard>
             );
           })}
         </LegendContainer>
-      </ChartContainer>
+      </LegendSection>
     </GuideDataWrapper>
   );
 }
 
-const ChartContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 10px 20px;
+const BarContainer = styled.div`
+  padding: 15px 20px;
   background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  margin-bottom: 12px;
+`;
+
+const LegendSection = styled.div`
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 6px;
 `;
 
 const StackedBarContainer = styled.div`
   width: 100%;
-  height: 40px;
+  height: 0;
+  padding-bottom: 3%; /* Bar height is 3% of width */
+  position: relative;
   display: flex;
   border-radius: 4px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
 `;
 
-const StackedSegment = styled.div<{ $color: string; $width: number }>`
+const StackedSegment = styled.div<{
+  $color: string;
+  $width: number;
+  $left: number;
+  $dimmed?: boolean;
+}>`
+  position: absolute;
+  left: ${(props) => props.$left}%;
   width: ${(props) => props.$width}%;
+  height: 100%;
+  top: 0;
   background: ${(props) => props.$color};
   transition: all 0.2s ease;
   cursor: pointer;
-  opacity: 0.9;
+  opacity: ${(props) => (props.$dimmed ? 0.3 : 0.9)};
+  filter: ${(props) => (props.$dimmed ? 'grayscale(100%) brightness(0.6)' : 'none')};
 
   &:hover {
     opacity: 1;
-    filter: brightness(1.1);
+    filter: none;
   }
 `;
 
 const LegendContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
 
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const LegendColorBox = styled.div<{ color: string }>`
-  width: 20px;
-  height: 20px;
-  background: ${(props) => props.color};
-  border-radius: 4px;
-  flex-shrink: 0;
-  opacity: 0.8;
-`;
-
-const LegendContent = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-`;
-
-const LegendSpell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.4rem;
-
-  img {
-    width: 20px;
-    height: 20px;
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 `;
 
-const LegendStats = styled.div`
+const GridCard = styled.div<{ color: string; $dimmed?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border-left: 3px solid ${(props) => props.color};
+  transition: all 0.2s ease;
+  cursor: pointer;
+  opacity: ${(props) => (props.$dimmed ? 0.4 : 1)};
+  filter: ${(props) => (props.$dimmed ? 'grayscale(100%)' : 'none')};
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    filter: none;
+  }
+`;
+
+const SpellIcon = styled.img`
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+`;
+
+const GridContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+`;
+
+const GridSpellName = styled.div`
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  font-size: 1.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const GridStats = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  flex-shrink: 0;
+  gap: 6px;
 `;
 
-const LegendValue = styled.div`
-  font-weight: 600;
+const GridAmount = styled.div`
   color: white;
+  font-weight: 700;
   font-size: 1.4rem;
 `;
 
-const LegendPercentage = styled.div`
-  font-size: 1.4rem;
+const GridPercentage = styled.div`
   color: rgba(255, 255, 255, 0.6);
-  min-width: 50px;
-  text-align: right;
+  font-size: 1.2rem;
+  font-weight: 500;
 `;

@@ -10,7 +10,6 @@ import TALENTS from 'common/TALENTS/mage';
 import PreparationSection from 'interface/guide/components/Preparation/PreparationSection';
 
 import MajorDefensives from 'src/analysis/retail/mage/shared/defensives/DefensivesGuide';
-import AplGuideSubsection from './apl/AplGuideSection';
 import { RoundedPanel } from 'interface/guide/components/GuideDivs';
 import CastEfficiencyRibbon from 'interface/guide/components/CastEfficiencyRibbon';
 
@@ -134,18 +133,16 @@ export default function Guide({ modules, events, info }: GuideProps<typeof Comba
           long way towards improving your overall damage, especially{' '}
           <SpellLink spell={TALENTS.ARCANE_SURGE_TALENT} />.
         </>
-        <SubSection title="Cast Efficiency">
-          <RoundedPanel>
-            <CastEfficiencyRibbon spell={TALENTS.ARCANE_SURGE_TALENT} compactLayout />
-            <CastEfficiencyRibbon spell={TALENTS.TOUCH_OF_THE_MAGI_TALENT} compactLayout />
-            {info.combatant.hasTalent(TALENTS.PRESENCE_OF_MIND_TALENT) && (
-              <CastEfficiencyRibbon spell={TALENTS.PRESENCE_OF_MIND_TALENT} compactLayout />
-            )}
-            {info.combatant.hasTalent(TALENTS.EVOCATION_TALENT) && (
-              <CastEfficiencyRibbon spell={TALENTS.EVOCATION_TALENT} compactLayout />
-            )}
-          </RoundedPanel>
-        </SubSection>
+        <RoundedPanel>
+          <CastEfficiencyRibbon spell={TALENTS.ARCANE_SURGE_TALENT} compactLayout />
+          <CastEfficiencyRibbon spell={TALENTS.TOUCH_OF_THE_MAGI_TALENT} compactLayout />
+          {info.combatant.hasTalent(TALENTS.PRESENCE_OF_MIND_TALENT) && (
+            <CastEfficiencyRibbon spell={TALENTS.PRESENCE_OF_MIND_TALENT} compactLayout />
+          )}
+          {info.combatant.hasTalent(TALENTS.EVOCATION_TALENT) && (
+            <CastEfficiencyRibbon spell={TALENTS.EVOCATION_TALENT} compactLayout />
+          )}
+        </RoundedPanel>
       </Section>
       <MajorDefensives />
       <PreparationSection />

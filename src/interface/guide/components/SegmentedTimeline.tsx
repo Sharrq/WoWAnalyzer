@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useFight } from 'interface/report/context/FightContext';
 
 export interface TimeWindow {

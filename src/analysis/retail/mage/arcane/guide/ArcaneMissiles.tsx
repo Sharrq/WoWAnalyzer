@@ -56,11 +56,11 @@ class ArcaneMissilesGuide extends Analyzer {
 
     // Average delay from channel end
     stats.push({
-      value: formatDurationMillisMinSec(this.arcaneMissiles.averageChannelDelay, 3),
+      value: formatDurationMillisMinSec(this.arcaneMissiles.averageChannelDelay, 2),
       label: 'Avg Channel End Delay ',
       tooltip: (
         <>
-          {formatDurationMillisMinSec(this.arcaneMissiles.averageChannelDelay, 3)} Average Delay
+          {formatDurationMillisMinSec(this.arcaneMissiles.averageChannelDelay, 2)} Average Delay
           from End Channel to Next Cast.
         </>
       ),

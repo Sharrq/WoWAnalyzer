@@ -70,4 +70,5 @@ export function ExplanationAndDataSubSection({
 const StyledExplanationRow = styled.div`
   display: grid;
   grid-column-gap: 1em;
+  align-items: start;
 `;

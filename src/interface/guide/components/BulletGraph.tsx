@@ -1,4 +1,6 @@
 import styled from '@emotion/styled';
+import { Tooltip } from 'interface';
+import { BAD_COLOR } from 'interface/guide/colors';
 
 /**
  * A bullet graph visualization component for displaying performance metrics.
@@ -31,6 +33,10 @@ export interface BulletGraphProps {
   barColor: string;
   /** Performance ranges to display in the background */
   performanceRanges?: PerformanceRange[];
+  /** If true, shows performance ranges as a separate sub-bar below the main bar */
+  showThresholdBar?: boolean;
+  /** If provided, shows highlighted missed section instead of target line/label */
+  missedCasts?: number;
   /** Optional secondary metric (e.g., wasted time) */
   secondaryMetric?: {
     /** Value as percentage of fight duration (0-100) */
@@ -53,6 +59,7 @@ export interface BulletGraphProps {
  * @param maximumLabel - Label to display at the target marker (e.g., "Max 20")
  * @param barColor - Color for the main progress bar
  * @param performanceRanges - Optional performance ranges for the background
+ * @param showThresholdBar - If true, shows performance ranges as a separate sub-bar
  * @param secondaryMetric - Optional secondary metric (e.g., wasted time)
  * @param className - Optional CSS class name
  */
@@ -63,27 +70,45 @@ export default function BulletGraph({
   maximumLabel,
   barColor,
   performanceRanges,
+  showThresholdBar = false,
+  missedCasts,
   secondaryMetric,
   className,
 }: BulletGraphProps) {
   const percentage = Math.min((actual / maximum) * 100, 100);
+  const missedPercentage = missedCasts ? (missedCasts / maximum) * 100 : 0;
 
   return (
     <Container className={className}>
       <GraphBackground>
-        {performanceRanges?.map((range, index) => (
-          <PerformanceZone key={index} width={range.width} color={range.color} />
-        ))}
+        {!showThresholdBar &&
+          performanceRanges?.map((range, index) => (
+            <PerformanceZone key={index} width={range.width} color={range.color} />
+          ))}
       </GraphBackground>
 
       <MainBar width={percentage} color={barColor}>
         <BarLabel>{actualLabel}</BarLabel>
       </MainBar>
 
-      <TargetMarker>
-        <TargetLine />
-        <TargetLabel>{maximumLabel}</TargetLabel>
-      </TargetMarker>
+      {missedCasts && missedCasts > 0 ? (
+        <Tooltip content={`${missedCasts} missed ${missedCasts === 1 ? 'cast' : 'casts'}`}>
+          <MissedBar left={percentage} width={missedPercentage} />
+        </Tooltip>
+      ) : (
+        <TargetMarker>
+          <TargetLine />
+          <TargetLabel $insideBar={showThresholdBar}>{maximumLabel}</TargetLabel>
+        </TargetMarker>
+      )}
+
+      {showThresholdBar && performanceRanges && performanceRanges.length > 0 && (
+        <ThresholdBar>
+          {performanceRanges.map((range, index) => (
+            <ThresholdSegment key={index} width={range.width} color={range.color} />
+          ))}
+        </ThresholdBar>
+      )}
 
       {secondaryMetric && (
         <SecondaryBar>
@@ -163,15 +188,54 @@ const TargetLine = styled.div`
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 `;
 
-const TargetLabel = styled.span`
+const TargetLabel = styled.span<{ $insideBar?: boolean }>`
   position: absolute;
-  bottom: -25px;
-  right: -10px;
-  color: rgba(255, 255, 255, 0.7);
+  bottom: ${(props) => (props.$insideBar ? '6px' : '-25px')};
+  right: ${(props) => (props.$insideBar ? '15px' : '-10px')};
+  color: ${(props) => (props.$insideBar ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.7)')};
   font-size: 1.6rem;
   font-weight: 600;
   white-space: nowrap;
   text-align: right;
+  text-shadow: ${(props) => (props.$insideBar ? '0 1px 3px rgba(0, 0, 0, 0.9)' : 'none')};
+`;
+
+const MissedBar = styled.div<{ left: number; width: number }>`
+  position: absolute;
+  left: ${(props) => props.left}%;
+  top: 0;
+  width: ${(props) => props.width}%;
+  height: 32px;
+  background: ${BAD_COLOR};
+  display: flex;
+  align-items: center;
+  transition: width 0.3s ease;
+  cursor: help;
+  opacity: 0.85;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const ThresholdBar = styled.div`
+  width: 100%;
+  height: 8px;
+  display: flex;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+`;
+
+const ThresholdSegment = styled.div<{ width: number; color: string }>`
+  width: ${(props) => props.width}%;
+  height: 100%;
+  background: ${(props) => props.color};
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 const SecondaryBar = styled.div`

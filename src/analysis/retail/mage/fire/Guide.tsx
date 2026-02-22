@@ -12,7 +12,6 @@ import MajorDefensives from 'src/analysis/retail/mage/shared/defensives/Defensiv
 import {
   IntensityChart,
   IntensityBar,
-  DamageContribution,
   CastEfficiencyRibbon,
   GuideSection,
 } from 'interface/guide/components';
@@ -118,43 +117,17 @@ export default function Guide({ modules, events, info }: GuideProps<typeof Comba
               <CastEfficiencyRibbon spell={TALENTS.COMBUSTION_TALENT} compactLayout />
             )}
             {info.combatant.hasTalent(TALENTS.FIRE_BLAST_TALENT) && (
-              <CastEfficiencyRibbon spell={TALENTS.FIRE_BLAST_TALENT} compactLayout />
+              <CastEfficiencyRibbon
+                spell={TALENTS.FIRE_BLAST_TALENT}
+                compactLayout
+                showThresholds
+              />
             )}
             {info.combatant.hasTalent(TALENTS.METEOR_TALENT) && (
               <CastEfficiencyRibbon spell={TALENTS.METEOR_TALENT} compactLayout />
             )}
           </RoundedPanel>
         </SubSection>
-      </Section>
-
-      <Section title="Combustion Damage Breakdown">
-        <IntensityChart
-          spell={SPELLS.IGNITE}
-          data={modules.igniteTracker.getTargetDpsData()}
-          chartType="DPS"
-          uptimePercent={modules.igniteTracker.getUptimePercent()}
-        />
-        <IntensityBar
-          spell={SPELLS.IGNITE}
-          data={modules.igniteTracker.getTargetDpsData()}
-          chartType="DPS"
-        />
-        <DamageContribution
-          title="Damage During Combustion"
-          spells={[
-            { spell: TALENTS.PYROBLAST_TALENT, color: '#ff6600' },
-            { spell: SPELLS.FIRE_BLAST, color: '#ff9933' },
-            { spell: SPELLS.PHOENIX_FLAMES_DAMAGE, color: '#ffcc00' },
-            { spell: SPELLS.IGNITE, color: '#ff4400' },
-            { spell: SPELLS.FLAMESTRIKE, color: '#cc3300' },
-            { spell: SPELLS.ARCANE_PHOENIX_DAMAGE, color: '#7b1d92ff' },
-          ]}
-          calculateContribution={(spellId: number) =>
-            modules.combustionDamageTracker.getDamageForSpell(spellId)
-          }
-          otherColor="#666666"
-          helperText="This shows the damage breakdown during Combustion windows. Focus on maximizing Pyroblast damage while efficiently using Fire Blast and Phoenix Flames charges."
-        />
       </Section>
 
       <GuideSection
