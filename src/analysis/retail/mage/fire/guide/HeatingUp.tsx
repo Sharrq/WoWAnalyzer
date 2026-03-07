@@ -9,6 +9,7 @@ import GuideSection from 'interface/guide/components/GuideSection';
 
 import HeatingUp from '../core/HeatingUp';
 import { formatDurationMillisMinSec } from 'common/format';
+import { maybeGetTalentOrSpell } from 'common/maybeGetTalentOrSpell';
 
 const CAPPED_MS_THRESHOLD = 7000;
 const FEEL_THE_BURN_DURATION_THRESHOLD = 1500;
@@ -40,7 +41,7 @@ class HeatingUpGuide extends Analyzer {
     }
 
     if (hu.critBuff.active && hu.critBuff.buffId) {
-      const buffName = SPELLS[hu.critBuff.buffId]?.name || 'Unknown Buff';
+      const buffName = maybeGetTalentOrSpell(hu.critBuff.buffId)?.name || 'Unknown Buff';
       return {
         timestamp: hu.cast.timestamp,
         performance: QualitativePerformance.Good,

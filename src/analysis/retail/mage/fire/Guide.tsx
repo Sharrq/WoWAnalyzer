@@ -4,13 +4,13 @@ import Explanation from 'interface/guide/components/Explanation';
 import PerformanceStrong from 'interface/PerformanceStrong';
 import { formatPercentage } from 'common/format';
 import ActiveTimeGraph from 'parser/ui/ActiveTimeGraph';
-import CastEfficiencyBar from 'parser/ui/CastEfficiencyBar';
-import { GapHighlight } from 'parser/ui/CooldownBar';
 import { SpellLink } from 'interface';
 import SPELLS from 'common/SPELLS';
 import TALENTS from 'common/TALENTS/mage';
 import PreparationSection from 'interface/guide/components/Preparation/PreparationSection';
 import MajorDefensives from 'src/analysis/retail/mage/shared/defensives/DefensivesGuide';
+import { CastEfficiencyRibbon } from 'interface/guide/components';
+import { RoundedPanel } from 'interface/guide/components/GuideDivs';
 
 export const GUIDE_CORE_EXPLANATION_PERCENT = 50;
 
@@ -97,30 +97,29 @@ export default function Guide({ modules, events, info }: GuideProps<typeof Comba
           modules.feelTheBurnGuide.guideSubsection}
       </Section>
 
-      <Section title="Cooldowns"></Section>
-      <>
-        As is the case with most damage specs, properly utilizing your damage cooldowns will go a
-        long way towards improving your overall damage, especially{' '}
-        <SpellLink spell={TALENTS.COMBUSTION_TALENT} />.
-      </>
-      {info.combatant.hasTalent(TALENTS.COMBUSTION_TALENT) &&
-        modules.combustionGuide.guideSubsection}
+      <Section title="Cooldowns">
+        <>
+          As is the case with most damage specs, properly utilizing your damage cooldowns will go a
+          long way towards improving your overall damage, especially{' '}
+          <SpellLink spell={TALENTS.COMBUSTION_TALENT} />.
+        </>
+        {info.combatant.hasTalent(TALENTS.COMBUSTION_TALENT) &&
+          modules.combustionGuide.guideSubsection}
 
-      <SubSection title="Cast Efficiency"></SubSection>
-      {info.combatant.hasTalent(TALENTS.COMBUSTION_TALENT) && (
-        <CastEfficiencyBar
-          spell={TALENTS.COMBUSTION_TALENT}
-          gapHighlightMode={GapHighlight.FullCooldown}
-          useThresholds
-        />
-      )}
-      {info.combatant.hasTalent(TALENTS.METEOR_TALENT) && (
-        <CastEfficiencyBar
-          spell={TALENTS.METEOR_TALENT}
-          gapHighlightMode={GapHighlight.FullCooldown}
-          useThresholds
-        />
-      )}
+        <SubSection title="Cast Efficiency">
+          <RoundedPanel>
+            {info.combatant.hasTalent(TALENTS.COMBUSTION_TALENT) && (
+              <CastEfficiencyRibbon spell={TALENTS.COMBUSTION_TALENT} showIcon />
+            )}
+            {info.combatant.hasTalent(TALENTS.FIRE_BLAST_TALENT) && (
+              <CastEfficiencyRibbon spell={TALENTS.FIRE_BLAST_TALENT} showIcon />
+            )}
+            {info.combatant.hasTalent(TALENTS.METEOR_TALENT) && (
+              <CastEfficiencyRibbon spell={TALENTS.METEOR_TALENT} showIcon />
+            )}
+          </RoundedPanel>
+        </SubSection>
+      </Section>
 
       <Section title="Talents"></Section>
       <MajorDefensives />

@@ -4,6 +4,21 @@ export { default as CastOverview, type StatisticData } from './CastOverview';
 export { default as CastDetail, type PerCastData, type PerCastStat } from './CastDetail';
 export { default as GuideDataWrapper } from './GuideDataWrapper';
 export { default as BuffUptimeBar } from './BuffUptimeBar';
+export { default as CastEfficiencyRibbon } from './CastEfficiencyRibbon';
+export {
+  default as SegmentedBar,
+  type SegmentedBarProps,
+  type TimeWindow,
+  type TimelineSegment,
+  type TimelineMarker,
+  BAD_COLOR,
+  ChargeBar,
+  type ChargeBarProps,
+  DualBar,
+  type DualBarProps,
+  createCooldownSegments,
+  createCastMarkers,
+} from './SegmentedBar';
 export {
   default as CastSequence,
   type CastSequenceEntry,
@@ -19,9 +34,6 @@ export {
   StatCardLabel,
   StatsGrid,
   PerfBadgeGrid,
-  PerfBadgeCount,
-  PerfBadgeDivider,
-  PerfBadgeLabel,
   FilterBadge,
 } from './GuideDataWrapper';
 export { HelperTextRow } from './GuideDataWrapper';

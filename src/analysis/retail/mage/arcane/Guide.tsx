@@ -9,9 +9,9 @@ import SPELLS from 'common/SPELLS';
 import TALENTS from 'common/TALENTS/mage';
 import PreparationSection from 'interface/guide/components/Preparation/PreparationSection';
 
-import { GapHighlight } from 'parser/ui/CooldownBar';
-import CastEfficiencyBar from 'parser/ui/CastEfficiencyBar';
 import MajorDefensives from 'src/analysis/retail/mage/shared/defensives/DefensivesGuide';
+import { RoundedPanel } from 'interface/guide/components/GuideDivs';
+import CastEfficiencyRibbon from 'interface/guide/components/CastEfficiencyRibbon';
 
 export const GUIDE_CORE_EXPLANATION_PERCENT = 50;
 
@@ -133,30 +133,16 @@ export default function Guide({ modules, events, info }: GuideProps<typeof Comba
           long way towards improving your overall damage, especially{' '}
           <SpellLink spell={TALENTS.ARCANE_SURGE_TALENT} />.
         </>
-        <CastEfficiencyBar
-          spell={TALENTS.ARCANE_SURGE_TALENT}
-          gapHighlightMode={GapHighlight.FullCooldown}
-          useThresholds
-        />
-        <CastEfficiencyBar
-          spell={TALENTS.TOUCH_OF_THE_MAGI_TALENT}
-          gapHighlightMode={GapHighlight.FullCooldown}
-          useThresholds
-        />
-        {info.combatant.hasTalent(TALENTS.PRESENCE_OF_MIND_TALENT) && (
-          <CastEfficiencyBar
-            spell={TALENTS.PRESENCE_OF_MIND_TALENT}
-            gapHighlightMode={GapHighlight.FullCooldown}
-            useThresholds
-          />
-        )}
-        {info.combatant.hasTalent(TALENTS.EVOCATION_TALENT) && (
-          <CastEfficiencyBar
-            spell={TALENTS.EVOCATION_TALENT}
-            gapHighlightMode={GapHighlight.FullCooldown}
-            useThresholds
-          />
-        )}
+        <RoundedPanel>
+          <CastEfficiencyRibbon spell={TALENTS.ARCANE_SURGE_TALENT} showIcon />
+          <CastEfficiencyRibbon spell={TALENTS.TOUCH_OF_THE_MAGI_TALENT} showIcon />
+          {info.combatant.hasTalent(TALENTS.PRESENCE_OF_MIND_TALENT) && (
+            <CastEfficiencyRibbon spell={TALENTS.PRESENCE_OF_MIND_TALENT} />
+          )}
+          {info.combatant.hasTalent(TALENTS.EVOCATION_TALENT) && (
+            <CastEfficiencyRibbon spell={TALENTS.EVOCATION_TALENT} showIcon />
+          )}
+        </RoundedPanel>
       </Section>
       <MajorDefensives />
       <PreparationSection />

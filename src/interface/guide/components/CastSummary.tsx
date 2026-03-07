@@ -13,9 +13,9 @@ import GuideDataWrapper, {
   FilterBadge,
   HelperText,
   PerfBadgeGrid,
-  PerfBadgeCount,
-  PerfBadgeDivider,
-  PerfBadgeLabel,
+  StatCardValue,
+  StatCardDivider,
+  StatCardLabel,
 } from './GuideDataWrapper';
 
 /** Represents a single cast evaluation with timestamp and performance assessment */
@@ -119,9 +119,11 @@ export default function CastSummary({
             active={!inactive}
             style={{ pointerEvents: 'none', cursor: 'default' }}
           >
-            <PerfBadgeCount color={inactive ? '#c8c8c8' : color}>{count}</PerfBadgeCount>
-            <PerfBadgeDivider color={inactive ? '#c8c8c8' : color} />
-            <PerfBadgeLabel>{label}</PerfBadgeLabel>
+            <StatCardValue size="sm" color={inactive ? '#c8c8c8' : color}>
+              {count}
+            </StatCardValue>
+            <StatCardDivider size="sm" color={inactive ? '#c8c8c8' : color} />
+            <StatCardLabel size="sm">{label}</StatCardLabel>
           </FilterBadge>
         );
       })}

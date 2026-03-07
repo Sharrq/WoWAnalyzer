@@ -6,6 +6,7 @@ import Analyzer from 'parser/core/Analyzer';
 import GuideSection from 'interface/guide/components/GuideSection';
 import CastSummary, { type CastEvaluation } from 'interface/guide/components/CastSummary';
 import CastOverview from 'interface/guide/components/CastOverview';
+import CastEfficiencyRibbon from 'interface/guide/components/CastEfficiencyRibbon';
 
 import ArcaneOrb from '../analyzers/ArcaneOrb';
 import CastEfficiencyBar from 'parser/ui/CastEfficiencyBar';
@@ -127,12 +128,7 @@ class ArcaneOrbGuide extends Analyzer {
           casts={this.arcaneOrb.orbData.map((cast) => this.evaluateOrbCast(cast))}
           showBreakdown
         />
-        <CastEfficiencyBar
-          spell={SPELLS.ARCANE_ORB}
-          gapHighlightMode={GapHighlight.FullCooldown}
-          minimizeIcons
-          showExplanation
-        />
+        <CastEfficiencyRibbon spell={SPELLS.ARCANE_ORB} showExplanation />
       </GuideSection>
     );
   }

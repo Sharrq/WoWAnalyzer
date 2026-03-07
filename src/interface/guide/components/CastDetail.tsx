@@ -8,10 +8,7 @@ import GuideDataWrapper, {
   HelperText,
   HelperTextRow,
   FilterBadge,
-  PerfBadgeCount,
-  PerfBadgeDivider,
   PerfBadgeGrid,
-  PerfBadgeLabel,
   StatCard,
   StatCardDivider,
   StatCardLabel,
@@ -175,9 +172,11 @@ export default function CastDetail({ title, casts, description }: CastDetailProp
             disabled={disabled}
             onClick={!disabled ? () => togglePerformanceFilter(perf) : undefined}
           >
-            <PerfBadgeCount color={color}>{count}</PerfBadgeCount>
-            <PerfBadgeDivider color={color} />
-            <PerfBadgeLabel>{label}</PerfBadgeLabel>
+            <StatCardValue size="sm" color={color}>
+              {count}
+            </StatCardValue>
+            <StatCardDivider size="sm" color={color} />
+            <StatCardLabel size="sm">{label}</StatCardLabel>
           </FilterBadge>
         );
         if (disabled) return badge;
@@ -447,7 +446,7 @@ const HeaderPerfBadge = styled.div<{ color: string }>`
   padding: 2px 7px;
   border-radius: 4px;
   border: 1px solid ${(p) => p.color}45;
-  background: ${(p) => p.color}12;
+  background: rgba(0, 0, 0, 0.2);
   font-size: 1.4rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -522,8 +521,5 @@ export {
   StatCardLabel,
   StatsGrid,
   PerfBadgeGrid,
-  PerfBadgeCount,
-  PerfBadgeDivider,
-  PerfBadgeLabel,
   FilterBadge,
 } from './GuideDataWrapper';
