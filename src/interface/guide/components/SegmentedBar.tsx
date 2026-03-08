@@ -34,6 +34,13 @@ export interface TimelineMarker {
   color?: string;
 }
 
+export interface ChargeSegment {
+  start: number;
+  end: number;
+  /** Number of charges held during this period */
+  charges: number;
+}
+
 export interface SegmentedBarProps {
   /** Optional windows to show on the timeline (defaults to full fight if not specified) */
   windows?: TimeWindow[];
@@ -290,6 +297,81 @@ export function createCooldownSegments(
 }
 
 /**
+ * Builds ChargeSegment[] by replaying UpdateSpellUsable events to track charge count over time.
+ */
+export function createChargeSegments(
+  spellId: number,
+  events: ReturnType<typeof useEvents>,
+  windows: CooldownWindow[],
+  maxCharges: number,
+): ChargeSegment[] {
+  const segments: ChargeSegment[] = [];
+
+  const isChargeUse = (t: UpdateSpellUsableType) =>
+    t === UpdateSpellUsableType.UseCharge || t === UpdateSpellUsableType.BeginCooldown;
+  const isChargeRestore = (t: UpdateSpellUsableType) =>
+    t === UpdateSpellUsableType.RestoreCharge || t === UpdateSpellUsableType.EndCooldown;
+
+  const allUpdateEvents: UpdateSpellUsableEvent[] = events
+    .filter(
+      (e): e is UpdateSpellUsableEvent =>
+        e.type === EventType.UpdateSpellUsable && e.ability.guid === spellId,
+    )
+    .sort((a, b) => {
+      if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
+      return isChargeUse(a.updateType) ? -1 : 1;
+    });
+
+  // Drop simultaneous use+restore pairs (instant recharge edge-case)
+  const filteredEvents: UpdateSpellUsableEvent[] = [];
+  for (let i = 0; i < allUpdateEvents.length; i++) {
+    const ev = allUpdateEvents[i];
+    const next = allUpdateEvents[i + 1];
+    if (
+      next &&
+      ev.timestamp === next.timestamp &&
+      isChargeUse(ev.updateType) &&
+      isChargeRestore(next.updateType)
+    ) {
+      i++;
+      continue;
+    }
+    filteredEvents.push(ev);
+  }
+
+  windows.forEach((window) => {
+    // Replay events before window to find starting charge count
+    let charges = maxCharges;
+    filteredEvents.forEach((ev) => {
+      if (ev.timestamp < window.startTime) {
+        if (isChargeUse(ev.updateType)) charges = Math.max(0, charges - 1);
+        else if (ev.updateType === UpdateSpellUsableType.RestoreCharge)
+          charges = Math.min(maxCharges, charges + 1);
+        else if (ev.updateType === UpdateSpellUsableType.EndCooldown) charges = maxCharges;
+      }
+    });
+
+    const windowEvents = filteredEvents.filter(
+      (e) => e.timestamp >= window.startTime && e.timestamp <= window.endTime,
+    );
+
+    let segStart = window.startTime;
+    windowEvents.forEach((ev) => {
+      if (ev.timestamp > segStart) segments.push({ start: segStart, end: ev.timestamp, charges });
+      if (isChargeUse(ev.updateType)) charges = Math.max(0, charges - 1);
+      else if (ev.updateType === UpdateSpellUsableType.RestoreCharge)
+        charges = Math.min(maxCharges, charges + 1);
+      else if (ev.updateType === UpdateSpellUsableType.EndCooldown) charges = maxCharges;
+      segStart = ev.timestamp;
+    });
+
+    if (window.endTime > segStart) segments.push({ start: segStart, end: window.endTime, charges });
+  });
+
+  return segments;
+}
+
+/**
  * Builds TimelineMarker[] from cast events for use with SegmentedBar / DualBar.
  */
 export function createCastMarkers(
@@ -316,6 +398,422 @@ export function createCastMarkers(
       });
   });
   return markers;
+}
+
+// ── ChargeTimeline ────────────────────────────────────────────────────────
+
+export interface ChargeTimelineProps {
+  /** Charge-level segments from createChargeSegments() */
+  chargeSegments: ChargeSegment[];
+  /** Cast timestamps for teardrop pin markers */
+  castTimestamps: number[];
+  /** Max charges for this spell */
+  maxCharges: number;
+  /** Fight start timestamp */
+  fightStart: number;
+  /** Fight end timestamp */
+  fightEnd: number;
+  /** Color when at max charges (capped) */
+  cappedColor?: string;
+  /** Color when spending/recharging */
+  activeColor?: string;
+  /** Color for cast pins */
+  pinColor?: string;
+}
+
+/**
+ * SVG step-function timeline showing charge count over the fight.
+ * Bar height = current charges / maxCharges. Red when capped, yellow otherwise.
+ * Teardrop pins mark each cast (same style as DualBar).
+ */
+export function ChargeTimeline({
+  chargeSegments,
+  castTimestamps,
+  maxCharges,
+  fightStart,
+  fightEnd,
+  cappedColor = '#ef4444',
+  activeColor = '#fbbf24',
+  pinColor = '#00d9ff',
+}: ChargeTimelineProps) {
+  const totalMs = fightEnd - fightStart;
+  const MARKER_PAD = 8;
+  const TRACK_H = 24;
+  const SVG_H = MARKER_PAD + TRACK_H;
+  const SVG_W = 100;
+  const PIN_W = 0.5;
+  const PIN_H = 9;
+  const PIN_OFF_Y = 3;
+
+  const toX = (ts: number) => ((ts - fightStart) / totalMs) * SVG_W;
+
+  // Horizontal guide lines at each charge threshold
+  const guideLines = Array.from({ length: maxCharges - 1 }, (_, i) => {
+    const chargeLevel = i + 1;
+    const y = MARKER_PAD + TRACK_H - (chargeLevel / maxCharges) * TRACK_H;
+    return (
+      <line
+        key={i}
+        x1={0}
+        y1={y}
+        x2={SVG_W}
+        y2={y}
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth={0.5}
+        vectorEffect="non-scaling-stroke"
+        strokeDasharray="2 2"
+      />
+    );
+  });
+
+  const segRects = chargeSegments.map((seg, i) => {
+    if (seg.charges === 0) return null;
+    const x = toX(seg.start);
+    const w = Math.max(0.2, toX(seg.end) - x);
+    const fillH = (seg.charges / maxCharges) * TRACK_H;
+    const barY = MARKER_PAD + TRACK_H - fillH;
+    const color = seg.charges === maxCharges ? cappedColor : activeColor;
+    const label = `${seg.charges}/${maxCharges} charges — ${formatDuration(seg.end - seg.start)}`;
+    return (
+      <rect key={i} x={x} y={barY} width={w} height={fillH} fill={color}>
+        <title>{label}</title>
+      </rect>
+    );
+  });
+
+  const pinElems = castTimestamps.map((ts, i) => {
+    const mx = toX(ts);
+    const teardrop = `
+      M ${mx} ${PIN_H + PIN_OFF_Y}
+      Q ${mx - PIN_W} ${PIN_H * 0.6 + PIN_OFF_Y} ${mx - PIN_W} ${PIN_H * 0.3 + PIN_OFF_Y}
+      A ${PIN_W} ${PIN_H * 0.3} 0 1 1 ${mx + PIN_W} ${PIN_H * 0.3 + PIN_OFF_Y}
+      Q ${mx + PIN_W} ${PIN_H * 0.6 + PIN_OFF_Y} ${mx} ${PIN_H + PIN_OFF_Y}
+      Z
+    `;
+    return (
+      <g key={i}>
+        <title>{`Cast at ${formatDuration(ts - fightStart)}`}</title>
+        <path
+          d={teardrop}
+          fill={pinColor}
+          stroke="#006b80"
+          strokeWidth={1.2}
+          vectorEffect="non-scaling-stroke"
+          paintOrder="stroke"
+        />
+        <line
+          x1={mx}
+          y1={PIN_H}
+          x2={mx}
+          y2={SVG_H}
+          stroke={pinColor}
+          strokeWidth={2.5}
+          vectorEffect="non-scaling-stroke"
+          opacity={1}
+        />
+      </g>
+    );
+  });
+
+  return (
+    <svg
+      width="100%"
+      height={SVG_H}
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+      style={{ display: 'block' }}
+    >
+      <rect x={0} y={MARKER_PAD} width={SVG_W} height={TRACK_H} fill="rgba(255,255,255,0.06)" />
+      {guideLines}
+      {segRects}
+      {pinElems}
+    </svg>
+  );
+}
+
+// ── CastDelayBar ─────────────────────────────────────────────────────
+
+export interface CastDelay {
+  /** Timestamp of the cast */
+  castTimestamp: number;
+  /** When the charge/spell became available before this cast */
+  availableAt: number;
+}
+
+export interface CastDelayBarProps {
+  /** Per-cast delay data */
+  castDelays: CastDelay[];
+  /** Capped segments for the sub-bar (red when at max charges) */
+  cappedSegments: TimelineSegment[];
+  /** Fight start timestamp */
+  fightStart: number;
+  /** Fight end timestamp */
+  fightEnd: number;
+}
+
+function castDelayColor(delayMs: number): string {
+  if (delayMs < 2000) return '#22c55e';
+  if (delayMs < 5000) return '#fbbf24';
+  return '#ef4444';
+}
+
+/**
+ * Timeline bar showing per-cast delay for charge-based spells.
+ * Each cast is rendered as a colored band from when the charge became available
+ * to when it was actually cast. Green = immediate, yellow = slight delay, red = poor.
+ * Sub-bar shows capped periods in red.
+ */
+export function CastDelayBar({
+  castDelays,
+  cappedSegments,
+  fightStart,
+  fightEnd,
+}: CastDelayBarProps) {
+  const totalMs = fightEnd - fightStart;
+  const MAIN_H = 24;
+  const SUB_H = 8;
+  const SVG_H = MAIN_H + SUB_H;
+  const SVG_W = 100;
+
+  const toX = (ts: number) => ((ts - fightStart) / totalMs) * SVG_W;
+
+  const delayBands = castDelays.map((cd, i) => {
+    const delayMs = Math.max(0, cd.castTimestamp - cd.availableAt);
+    const color = castDelayColor(delayMs);
+    const x = toX(cd.availableAt);
+    const castX = toX(cd.castTimestamp);
+    const w = Math.max(0.5, castX - x);
+    const label = `Cast at ${formatDuration(cd.castTimestamp - fightStart)} — delay: ${
+      delayMs < 1000 ? '<1s' : formatDuration(delayMs)
+    }`;
+    return (
+      <g key={i}>
+        <rect x={x} y={0} width={w} height={MAIN_H} fill={color} opacity={0.8}>
+          <title>{label}</title>
+        </rect>
+        <line
+          x1={castX}
+          y1={0}
+          x2={castX}
+          y2={MAIN_H}
+          stroke="rgba(255,255,255,0.45)"
+          strokeWidth={1.2}
+          vectorEffect="non-scaling-stroke"
+        />
+      </g>
+    );
+  });
+
+  const subBars = cappedSegments.map((seg, i) => {
+    const x = toX(seg.start);
+    const w = Math.max(0.2, toX(seg.end) - x);
+    return (
+      <rect key={i} x={x} y={MAIN_H} width={w} height={SUB_H} fill="#ef4444">
+        <title>{seg.label}</title>
+      </rect>
+    );
+  });
+
+  return (
+    <svg
+      width="100%"
+      height={SVG_H}
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+      style={{ display: 'block' }}
+    >
+      <rect x={0} y={0} width={SVG_W} height={MAIN_H} fill="rgba(255,255,255,0.06)" />
+      <rect x={0} y={MAIN_H} width={SVG_W} height={SUB_H} fill="rgba(255,255,255,0.04)" />
+      {subBars}
+      {delayBands}
+    </svg>
+  );
+}
+// ── ThermalChargeBar ────────────────────────────────────────────────────
+
+export interface ThermalChargeBarProps {
+  chargeSegments: ChargeSegment[];
+  maxCharges: number;
+  castTimestamps: number[];
+  fightStart: number;
+  fightEnd: number;
+}
+
+/** Returns a fill color + opacity for a given charge level. */
+function thermalColor(charges: number, maxCharges: number): { color: string; opacity: number } {
+  if (charges === 0) return { color: '#ffffff', opacity: 0 };
+  if (charges === maxCharges) return { color: '#ef4444', opacity: 1 };
+  // Gradient: faint yellow (1 charge) → bright yellow (just below cap)
+  const opacity = 0.3 + 0.7 * ((charges - 1) / Math.max(1, maxCharges - 2));
+  return { color: '#fbbf24', opacity: Math.min(1, opacity) };
+}
+
+/**
+ * Single-track bar where fill color encodes charge level as a heat gradient.
+ * Dark = 0 charges (recharging), dim→bright yellow = 1→N-1 charges held,
+ * fully saturated red = capped at max charges.
+ * Cast ticks shown as a separate 4px strip below the main bar.
+ */
+export function ThermalChargeBar({
+  chargeSegments,
+  maxCharges,
+  castTimestamps,
+  fightStart,
+  fightEnd,
+}: ThermalChargeBarProps) {
+  const totalMs = fightEnd - fightStart;
+  const MAIN_H = 24;
+  const GAP = 2;
+  const TICK_H = 4;
+  const TICK_OVERLAP = 4;
+  const SVG_H = MAIN_H + GAP + TICK_H;
+  const SVG_W = 100;
+
+  const toX = (ts: number) => ((ts - fightStart) / totalMs) * SVG_W;
+
+  // Thermal: full-height rects, color/opacity from thermalColor()
+  const segRects = chargeSegments.map((seg, i) => {
+    const { color, opacity } = thermalColor(seg.charges, maxCharges);
+    if (opacity === 0) return null;
+    const x = toX(seg.start);
+    const w = Math.max(0.2, toX(seg.end) - x);
+    const label = `${seg.charges}/${maxCharges} charges — ${formatDuration(seg.end - seg.start)}`;
+    return (
+      <rect key={i} x={x} y={0} width={w} height={MAIN_H} fill={color} opacity={opacity}>
+        <title>{label}</title>
+      </rect>
+    );
+  });
+
+  const tickElems = castTimestamps.map((ts, i) => {
+    const cx = toX(ts);
+    return (
+      <line
+        key={i}
+        x1={cx}
+        y1={MAIN_H + GAP - TICK_OVERLAP}
+        x2={cx}
+        y2={MAIN_H + GAP + TICK_H}
+        stroke="#00d9ff"
+        strokeWidth={1.5}
+        vectorEffect="non-scaling-stroke"
+        opacity={0.8}
+      >
+        <title>{`Cast at ${formatDuration(ts - fightStart)}`}</title>
+      </line>
+    );
+  });
+
+  return (
+    <svg
+      width="100%"
+      height={SVG_H}
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+      style={{ display: 'block' }}
+    >
+      <rect x={0} y={0} width={SVG_W} height={MAIN_H} fill="rgba(255,255,255,0.08)" />
+      <rect x={0} y={MAIN_H + GAP} width={SVG_W} height={TICK_H} fill="rgba(255,255,255,0.04)" />
+      {segRects}
+      {tickElems}
+    </svg>
+  );
+}
+// ── ChargeLevelBar ─────────────────────────────────────────────────────
+
+export interface ChargeLevelBarProps {
+  /** Charge-level segments from createChargeSegments() */
+  chargeSegments: ChargeSegment[];
+  /** Max charges for this spell */
+  maxCharges: number;
+  /** Cast timestamps for vertical cast lines */
+  castTimestamps: number[];
+  /** Fight start timestamp */
+  fightStart: number;
+  /** Fight end timestamp */
+  fightEnd: number;
+}
+
+/**
+ * Stacked row visualization for charge-based spells.
+ * One row per charge slot (bottom = charge 1, top = charge N).
+ * Row is dark while recharging, yellow when available, red when fully capped.
+ * Thin white lines mark each cast across all rows.
+ */
+export function ChargeLevelBar({
+  chargeSegments,
+  maxCharges,
+  castTimestamps,
+  fightStart,
+  fightEnd,
+}: ChargeLevelBarProps) {
+  const totalMs = fightEnd - fightStart;
+  const ROW_H = Math.floor(24 / maxCharges);
+  const GAP = maxCharges > 1 ? 1 : 0;
+  const TOTAL_ROWS_H = maxCharges * ROW_H + (maxCharges - 1) * GAP;
+  const SVG_H = TOTAL_ROWS_H;
+  const SVG_W = 100;
+
+  const toX = (ts: number) => ((ts - fightStart) / totalMs) * SVG_W;
+
+  // Row i (0 = top = highest charge slot)
+  const rowY = (i: number) => i * (ROW_H + GAP);
+  // Row slot level: row 0 = maxCharges, row maxCharges-1 = charge 1
+  const rowLevel = (i: number) => maxCharges - i;
+
+  const rowRects = chargeSegments.flatMap((seg) => {
+    const x = toX(seg.start);
+    const w = Math.max(0.2, toX(seg.end) - x);
+    const isCapped = seg.charges === maxCharges;
+    return Array.from({ length: maxCharges }, (_, i) => {
+      const level = rowLevel(i);
+      const lit = seg.charges >= level;
+      if (!lit) return null;
+      const color = isCapped ? '#ef4444' : '#fbbf24';
+      const label = `${seg.charges}/${maxCharges} charges — ${formatDuration(seg.end - seg.start)}`;
+      return (
+        <rect key={`${seg.start}-${i}`} x={x} y={rowY(i)} width={w} height={ROW_H} fill={color}>
+          <title>{label}</title>
+        </rect>
+      );
+    });
+  });
+
+  const castLines = castTimestamps.map((ts, i) => {
+    const cx = toX(ts);
+    return (
+      <line
+        key={i}
+        x1={cx}
+        y1={0}
+        x2={cx}
+        y2={SVG_H}
+        stroke="rgba(255,255,255,0.6)"
+        strokeWidth={1.5}
+        vectorEffect="non-scaling-stroke"
+      >
+        <title>{`Cast at ${formatDuration(ts - fightStart)}`}</title>
+      </line>
+    );
+  });
+
+  const bgRows = Array.from({ length: maxCharges }, (_, i) => (
+    <rect key={i} x={0} y={rowY(i)} width={SVG_W} height={ROW_H} fill="rgba(255,255,255,0.06)" />
+  ));
+
+  return (
+    <svg
+      width="100%"
+      height={SVG_H}
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+      style={{ display: 'block' }}
+    >
+      {bgRows}
+      {rowRects}
+      {castLines}
+    </svg>
+  );
 }
 
 // ── ChargeBar ──────────────────────────────────────────────────────────────

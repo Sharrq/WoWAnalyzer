@@ -10,6 +10,7 @@ import GuideSection from 'interface/guide/components/GuideSection';
 import { EventType, GetRelatedEvent } from 'parser/core/Events';
 
 import CombustionCasts from '../core/Combustion';
+import { CastEfficiencyRibbon } from 'interface/guide/components';
 
 class CombustionGuide extends Analyzer {
   static dependencies = {
@@ -138,6 +139,7 @@ class CombustionGuide extends Analyzer {
           casts={this.combustion.combustCasts.map((cast) => this.evaluateCombustionCast(cast))}
           showBreakdown
         />
+        <CastEfficiencyRibbon spell={TALENTS.FIRE_BLAST_TALENT} />
       </GuideSection>
     );
   }

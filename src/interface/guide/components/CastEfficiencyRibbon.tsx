@@ -17,7 +17,14 @@ import {
 import GuideDataWrapper from './GuideDataWrapper';
 import { EventType, UpdateSpellUsableEvent, UpdateSpellUsableType } from 'parser/core/Events';
 import { CooldownWindow } from 'parser/ui/CooldownBar';
-import { ChargeBar, DualBar, BAD_COLOR, createCooldownSegments } from './SegmentedBar';
+import {
+  type ChargeSegment,
+  ThermalChargeBar,
+  DualBar,
+  BAD_COLOR,
+  createCooldownSegments,
+  createChargeSegments,
+} from './SegmentedBar';
 
 // Styled Components
 const RibbonContainer = styled.div`
@@ -301,9 +308,18 @@ export default function CastEfficiencyRibbon({
         windows.some((w) => e.timestamp >= w.startTime && e.timestamp <= w.endTime),
     )
     .map((e) => e.timestamp);
+  const chargeSegs: ChargeSegment[] = hasCharges
+    ? createChargeSegments(spell.id, events, windows, maxCharges)
+    : [];
 
   const ribbon = hasCharges ? (
-    <ChargeBar actualCasts={actualCasts} possibleCasts={possibleCasts} />
+    <ThermalChargeBar
+      chargeSegments={chargeSegs}
+      maxCharges={maxCharges}
+      castTimestamps={castTs}
+      fightStart={fightStart}
+      fightEnd={fightEnd}
+    />
   ) : (
     <DualBar
       cooldownSegments={cdSegs}
