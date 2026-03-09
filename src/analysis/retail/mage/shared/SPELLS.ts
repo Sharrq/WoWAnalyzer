@@ -166,14 +166,14 @@ const spells = {
     name: 'Frost Mastery',
     icon: 'spell_fire_blueimmolation',
   },
-  MANA_ADDICTION_BUFF_FIRE: {
+  MANA_CASCADE_BUFF_FIRE: {
     id: 449314,
-    name: 'Mana Addiction',
+    name: 'Mana Cascade',
     icon: 'spell_frost_manarecharge',
   },
-  MANA_ADDICTION_BUFF_ARCANE: {
+  MANA_CASCADE_BUFF_ARCANE: {
     id: 449322,
-    name: 'Mana Addiction',
+    name: 'Mana Cascade',
     icon: 'spell_frost_manarecharge',
   },
   METEORITE_DAMAGE: {
@@ -201,6 +201,11 @@ const spells = {
     id: 448659,
     name: 'Arcane Phoenix',
     icon: 'inv_ability_sunfurymage_spellfirespheres',
+  },
+  LESSER_TIME_WARP_BUFF: {
+    id: 1260277,
+    name: 'Lesser Time Warp',
+    icon: 'ability_mage_timewarp',
   },
 } satisfies Record<string, Spell>;
 
