@@ -331,7 +331,7 @@ export function GetRelatedEvents<T extends AnyEvent>(
 }
 
 /** Gets the first event related to the given event with the given relation (key). Events will not
- * by default have any relations, you must hadd them with an {@link EventLinkNormalizer}. */
+ * by default have any relations, you must add them with an {@link EventLinkNormalizer}. */
 export function GetRelatedEvent<T extends AnyEvent>(
   event: AnyEvent,
   relation: string,
@@ -1122,11 +1122,13 @@ export interface CombatantInfoEvent extends Event<EventType.CombatantInfo> {
    * BFA: Essences
    * Shadowlands: Conduits
    */
+  // oxlint-disable-next-line typescript-eslint/no-explicit-any -- Baseline suppression. Try to fix if you edit this code.
   secondaryCustomPowerSet?: any[]; // will be copied into field with better name / type depending on expansion
   /**
    * Represents expansion specific traits
    * Shadowlands: Anima Powers
    */
+  // oxlint-disable-next-line typescript-eslint/no-explicit-any -- Baseline suppression. Try to fix if you edit this code.
   tertiaryCustomPowerSet?: any[]; // will be copied into field with better name / type depending on expansion
 }
 
@@ -1243,6 +1245,13 @@ const Events = {
    */
   get cast() {
     return new EventFilter(EventType.Cast);
+  },
+  /**
+   * This event is called when a spell is triggered as the result of another cast
+   * @returns {EventFilter}
+   */
+  get freecast() {
+    return new EventFilter(EventType.FreeCast);
   },
   /**
    * Event specific props:

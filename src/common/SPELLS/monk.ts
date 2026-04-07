@@ -540,8 +540,8 @@ const spells = {
   },
   SPIRITFONT_HOT: {
     id: 1260617,
-    name: 'Spiritfont',
-    icon: 'inv12_apextalent_monk_spiritfont',
+    name: 'Soothing Mist',
+    icon: 'ability_monk_soothingmists',
   },
   SPIRITFONT_ACTIVE_BUFF: {
     id: 1260670,
@@ -790,11 +790,10 @@ const spells = {
     name: 'Charred Passions',
     icon: 'ability_monk_mightyoxkick',
   },
-  // Tier 29 2-set bonus
-  BREWMASTERS_RHYTHM_BUFF: {
-    id: 394797,
-    name: "Brewmaster's Rhythm",
-    icon: 'ability_monk_standingkick',
+  EMPTY_BARREL_BUFF: {
+    id: 1265307,
+    name: 'Empty Barrel',
+    icon: 'inv_achievement_dungeon_cinderbrewmeadery.jpg',
   },
   PRESS_THE_ADVANTAGE_BUFF: {
     ...talents.PRESS_THE_ADVANTAGE_TALENT,
@@ -823,6 +822,16 @@ const spells = {
     id: 388867,
     name: 'Exploding Keg',
     icon: 'inv12_ability_monk_explodingkeg.jpg',
+  },
+  EMPTY_THE_CELLAR_CAST: {
+    id: 1263438,
+    name: 'Empty the Cellar',
+    icon: 'ability_vehicle_liquidpyrite.jpg',
+  },
+  EMPTY_THE_CELLAR_DAMAGE: {
+    id: 1262765,
+    name: 'Empty the Cellar',
+    icon: 'ability_vehicle_liquidpyrite.jpg',
   },
   // Midnight S1 Tier Set
   EXTRA_KICK_DAMAGE: {
@@ -911,6 +920,21 @@ const spells = {
     id: 185099,
     name: 'Rising Sun Kick',
     icon: 'ability_monk_risingsunkick',
+  },
+  GLORY_OF_THE_DAWN_DAMAGE: {
+    id: 392959,
+    name: 'Glory of the Dawn',
+    icon: 'ability_monk_mightyoxkick',
+  },
+  RUSHING_WIND_KICK_BUFF: {
+    id: 1250554,
+    name: 'Rushing Wind Kick',
+    icon: 'ability_monk_ridethewind',
+  },
+  RUSHING_WIND_KICK_CAST: {
+    id: 467307,
+    name: 'Rushing Wind Kick',
+    icon: 'ability_monk_ridethewind',
   },
   RUSHING_WIND_KICK_DAMAGE: {
     id: 468179,

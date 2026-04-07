@@ -100,7 +100,7 @@ class EbonMight extends Analyzer {
     SPELLS.FIRE_BREATH_DOT,
     SPELLS.LIVING_FLAME_DAMAGE,
     SPELLS.AZURE_STRIKE,
-    SPELLS.UNRAVEL,
+    SPELLS.UNRAVEL_DAMAGE,
     TALENTS.ERUPTION_TALENT,
     SPELLS.UPHEAVAL_DAM,
     SPELLS.MASS_ERUPTION_DAMAGE,
@@ -333,9 +333,12 @@ class EbonMight extends Analyzer {
         category={STATISTIC_CATEGORY.TALENTS}
       >
         <TalentSpellText talent={TALENTS.EBON_MIGHT_TALENT}>
-          <InformationIcon /> {formatPercentage(buffUptime, 2)}%<small> buff uptime</small>
-          <br />
-          <ItemDamageDone amount={this.personalEbonMightDamage + this.externalEbonMightDamage} />
+          <div>
+            <InformationIcon /> {formatPercentage(buffUptime, 2)}%<small> buff uptime</small>
+          </div>
+          <div>
+            <ItemDamageDone amount={this.personalEbonMightDamage + this.externalEbonMightDamage} />
+          </div>
         </TalentSpellText>
         <div className="pad">
           <DonutChart items={damageSources} />

@@ -26,7 +26,7 @@ import CooldownOverview from 'parser/ui/CooldownOverview';
 import { ReactNode } from 'react';
 import GameBranch from 'game/GameBranch';
 
-const debug = true;
+const debug = false;
 
 export enum BUILT_IN_SUMMARY_TYPES {
   HEALING = 'HEALING',
@@ -48,7 +48,7 @@ export interface SummaryDef {
 export interface CooldownSpell {
   spell: number;
   summary: (BUILT_IN_SUMMARY_TYPES | SummaryDef)[];
-  startBufferFilter?: EventFilter<any>;
+  startBufferFilter?: EventFilter<any>; // oxlint-disable-line typescript-eslint/no-explicit-any -- Baseline suppression. Try to fix if you edit this code.
   startBufferMS?: number;
   startBufferEvents?: number;
   petID?: number;

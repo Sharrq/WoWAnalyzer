@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 import SPELLS from 'common/SPELLS';
-import talents, { TALENTS_MONK } from 'common/TALENTS/monk';
+import talents from 'common/TALENTS/monk';
 import { SpellLink } from 'interface';
 import { MistweaverApl } from './AplCheck';
 
@@ -10,14 +10,14 @@ const aplTitle = (choice: MistweaverApl) => {
       return (
         <>
           <SpellLink spell={talents.RISING_MIST_TALENT} /> /{' '}
-          <SpellLink spell={talents.JADEFIRE_TEACHINGS_TALENT} /> /{' '}
+          <SpellLink spell={talents.JADEFIRE_TEACHINGS_TALENT} />{' '}
         </>
       );
     case MistweaverApl.RisingMistRushingWindKick:
       return (
         <>
           <SpellLink spell={talents.RISING_MIST_TALENT} /> /{' '}
-          <SpellLink spell={talents.RUSHING_WIND_KICK_MISTWEAVER_TALENT} /> /{' '}
+          <SpellLink spell={talents.RUSHING_WIND_KICK_MISTWEAVER_TALENT} />{' '}
         </>
       );
     case MistweaverApl.WayOfTheCrane:
@@ -41,8 +41,8 @@ const JadefireTeachingsDescription = () => {
   return (
     <>
       <SpellLink spell={talents.RISING_SUN_KICK_TALENT} /> to extend hots and convert damage to
-      healing through <SpellLink spell={talents.RISING_SUN_KICK_TALENT} />
-      , <SpellLink spell={SPELLS.BLACKOUT_KICK} />, <SpellLink spell={SPELLS.TIGER_PALM} />, and{' '}
+      healing through <SpellLink spell={talents.RISING_SUN_KICK_TALENT} />,{' '}
+      <SpellLink spell={SPELLS.BLACKOUT_KICK} />, <SpellLink spell={SPELLS.TIGER_PALM} />, and{' '}
       <SpellLink spell={SPELLS.CRACKLING_JADE_LIGHTNING} />.
     </>
   );
