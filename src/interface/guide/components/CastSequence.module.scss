@@ -62,6 +62,16 @@
   }
 }
 
+.SequenceMarker {
+  align-self: center;
+  flex-shrink: 0;
+  width: 3px;
+  height: calc(var(--size) * 1px);
+  border-radius: 2px;
+  background: #ac1f39;
+  box-shadow: 0 0 5px rgba(172, 31, 57, 0.7);
+}
+
 .NavigationButtons {
   display: flex;
   gap: 4px;
