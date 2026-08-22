@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import type Spell from 'common/SPELLS/Spell';
 import cssComponent from 'interface/utils/css-component';
 import styles from './CastSequence.module.scss';
@@ -16,6 +16,7 @@ export interface CastInSequence {
   performance?: QualitativePerformance;
   outlineColor?: string;
   ghosted?: boolean;
+  separatorBefore?: boolean;
   tooltip?: React.ReactNode;
   /** Up to 2 small badge icons rendered in the top-right/bottom-right corners. */
   overlays?: string[];
@@ -50,33 +51,36 @@ export function SpellSequence({ casts, iconSize = 40 }: SpellSequenceProps) {
         const overlays = cast.overlays?.slice(0, 2) ?? [];
 
         return (
-          <Tooltip key={castIdx} content={cast.tooltip || defaultTooltip}>
-            <SpellIcon
-              size={iconSize}
-              color={color}
-              className={clsx({
-                [styles.noOutline]: color === DEFAULT_CAST_COLOR,
-                [styles.ghosted]: cast.ghosted,
-              })}
-            >
-              <img
-                src={`https://wow.zamimg.com/images/wow/icons/large/${cast.icon}.jpg`}
-                alt={cast.spellName}
-              />
-              {overlays.map((overlay, overlayIdx) => (
-                <Overlay
-                  key={overlayIdx}
-                  size={iconSize}
-                  className={clsx({ [styles.top]: overlayIdx === 0 })}
-                >
-                  <img
-                    src={`https://wow.zamimg.com/images/wow/icons/large/${overlay}.jpg`}
-                    alt=""
-                  />
-                </Overlay>
-              ))}
-            </SpellIcon>
-          </Tooltip>
+          <Fragment key={castIdx}>
+            {cast.separatorBefore && <SequenceMarker size={iconSize} aria-hidden="true" />}
+            <Tooltip content={cast.tooltip || defaultTooltip}>
+              <SpellIcon
+                size={iconSize}
+                color={color}
+                className={clsx({
+                  [styles.noOutline]: color === DEFAULT_CAST_COLOR,
+                  [styles.ghosted]: cast.ghosted,
+                })}
+              >
+                <img
+                  src={`https://wow.zamimg.com/images/wow/icons/large/${cast.icon}.jpg`}
+                  alt={cast.spellName}
+                />
+                {overlays.map((overlay, overlayIdx) => (
+                  <Overlay
+                    key={overlayIdx}
+                    size={iconSize}
+                    className={clsx({ [styles.top]: overlayIdx === 0 })}
+                  >
+                    <img
+                      src={`https://wow.zamimg.com/images/wow/icons/large/${overlay}.jpg`}
+                      alt=""
+                    />
+                  </Overlay>
+                ))}
+              </SpellIcon>
+            </Tooltip>
+          </Fragment>
         );
       })}
     </Sequence>
@@ -186,6 +190,8 @@ export default function CastSequence<T>({
 const Sequence = cssComponent('div', styles.Sequence, [] as const);
 
 const SpellIcon = cssComponent('div', styles.SpellIcon, ['color', 'size', 'ghosted'] as const);
+
+const SequenceMarker = cssComponent('div', styles.SequenceMarker, ['size'] as const);
 
 const NavigationButtons = cssComponent('div', styles.NavigationButtons, [] as const);
 
