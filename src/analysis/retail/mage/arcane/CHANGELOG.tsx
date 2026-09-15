@@ -16,8 +16,12 @@ const clearcasting = <SpellLink spell={SPELLS.CLEARCASTING_ARCANE} />
 const prismaticBolt = <SpellLink spell={SPELLS.PRISMATIC_BOLT} />
 const cumulativePower = <SpellLink spell={SPELLS.CUMULATIVE_POWER_BUFF} />;
 const arcaneSoul = <SpellLink spell={SPELLS.ARCANE_SOUL_BUFF} />;
+const arcaneBlast = <SpellLink spell={SPELLS.ARCANE_BLAST} />;
 
 export default [
+  change(date(2026, 9, 15), <>Updated {arcaneBarrage} to check whether {arcaneSoul} is about to begin or has just ended.</>, Sharrq),
+  change(date(2026, 9, 15), <>Updated {arcaneBarrage} to check to see if the player was casting {arcaneBlast} when they got {clearcasting}.</>, Sharrq),
+  change(date(2026, 9, 15), <>Updated {arcaneBarrage} to check for {prismaticBolt} precasts.</>, Sharrq),
   change(date(2026, 9, 15), <>Updated {prismaticBolt} to check to see if {arcaneBarrage} was cast immediately after {prismaticBolt}.</>, Sharrq),
   change(date(2026, 9, 15), <>Fixed {arcaneSoul} buff checking for munched {prismaticBolt} procs.</>, Sharrq),
   change(date(2026, 9, 11), <>Fixed {clearcasting} buff tracking for {arcaneBarrage}.</>, Sharrq),

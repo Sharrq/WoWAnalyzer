@@ -35,6 +35,7 @@ const CustomType = {
   PREVIOUS_CAST: 'previousCast',
   TOUCH_DEBUFF: 'touchDebuff',
   SURGE_BUFF: 'surgeBuff',
+  SOUL_END: 'arcaneSoulEnd',
 };
 
 const EVENT_LINKS = createEventLinks(
@@ -178,6 +179,25 @@ const EVENT_LINKS = createEventLinks(
         anyTarget: true,
         backwardBuffer: 16000,
         condition: isBuffActive,
+      }),
+      link(CustomType.PRECAST, {
+        type: EventType.Cast,
+        id: [
+          SPELLS.ARCANE_BLAST.id,
+          TALENTS.ARCANE_MISSILES_TALENT.id,
+          SPELLS.PRISMATIC_BOLT.id,
+          SPELLS.ARCANE_ORB.id,
+        ],
+        backwardBuffer: 5000,
+        maxLinks: 1,
+        anyTarget: true,
+      }),
+      link(CustomType.SOUL_END, {
+        type: EventType.RemoveBuff,
+        id: SPELLS.ARCANE_SOUL_BUFF.id,
+        maxLinks: 1,
+        backwardBuffer: 1500,
+        anyTarget: true,
       }),
     ],
   },

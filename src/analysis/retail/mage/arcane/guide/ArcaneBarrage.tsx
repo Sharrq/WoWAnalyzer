@@ -11,7 +11,7 @@ import CastDetail, {
 import Analyzer from 'parser/core/Analyzer';
 import ArcaneBarrage, { ArcaneBarrageData } from '../analyzers/ArcaneBarrage';
 import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
-import { CastEvaluation, PerformanceTipBox } from 'interface/guide/components';
+import { CastEvaluation, PerformanceTipBox, TipBox } from 'interface/guide/components';
 
 class ArcaneBarrageGuide extends Analyzer {
   static dependencies = {
@@ -47,6 +47,13 @@ class ArcaneBarrageGuide extends Analyzer {
     }
 
     // FAIL CONDITIONS
+    if (this.isSunfury && cast.arcaneSoulSoon) {
+      return {
+        timestamp: cast.cast.timestamp,
+        performance: QualitativePerformance.Fail,
+        reason: `Arcane Soul is about to start.`,
+      };
+    }
 
     // PERFECT CONDITIONS
     if (this.isSpellslinger && cast.salvoStacks === 20 && hasMaxCharges) {
@@ -118,7 +125,7 @@ class ArcaneBarrageGuide extends Analyzer {
       };
     }
 
-    if (this.isSunfury && hasArcaneSoulBuff) {
+    if (this.isSunfury && (hasArcaneSoulBuff || cast.recentArcaneSoul)) {
       return {
         timestamp: cast.cast.timestamp,
         performance: QualitativePerformance.Good,
@@ -131,6 +138,14 @@ class ArcaneBarrageGuide extends Analyzer {
         timestamp: cast.cast.timestamp,
         performance: QualitativePerformance.Good,
         reason: `Had 4 Arcane Charges and 25 Arcane Salvo stacks.`,
+      };
+    }
+
+    if (this.isSunfury && cast.precast?.ability.guid === SPELLS.PRISMATIC_BOLT.id) {
+      return {
+        timestamp: cast.cast.timestamp,
+        performance: QualitativePerformance.Good,
+        reason: `Prismatic Bolt was cast immediatey before Barrage.`,
       };
     }
 
@@ -202,6 +217,7 @@ class ArcaneBarrageGuide extends Analyzer {
     const arcaneSalvo = <SpellLink spell={TALENTS.ARCANE_SALVO_TALENT} />;
     const orbBarrage = <SpellLink spell={TALENTS.ORB_BARRAGE_TALENT} />;
     const arcaneSoul = <SpellLink spell={SPELLS.ARCANE_SOUL_BUFF} />;
+    const arcaneBlast = <SpellLink spell={SPELLS.ARCANE_BLAST} />;
 
     const explanation = (
       <>
@@ -224,8 +240,12 @@ class ArcaneBarrageGuide extends Analyzer {
         )}
         {this.isSunfury && (
           <ul>
-            <li>{arcaneSoul} is active.</li>
+            <li>{arcaneSoul} is active or just ended.</li>
             <li>You have 25 stacks of {arcaneSalvo}.</li>
+            <li>
+              You just proc'd {clearcasting} and are currently casting {arcaneBlast} (regardless of{' '}
+              {arcaneSalvo}, use {arcaneBarrage} at the end of the {arcaneBlast} cast).
+            </li>
             <li>
               You have at least 12 stacks of {arcaneSalvo} and a {clearcasting} proc.
             </li>
@@ -239,6 +259,11 @@ class ArcaneBarrageGuide extends Analyzer {
             <li>You are out of mana.</li>
           </ul>
         )}
+        <TipBox type="warning" title="Arcane Soul">
+          You should NOT use {arcaneBarrage} if {arcaneSoul} will start in the next 3 seconds. Once
+          {arcaneSoul} begins, you should press {arcaneBarrage} repeatedly until your {arcaneSalvo}{' '}
+          stacks go away.
+        </TipBox>
         <PerformanceTipBox performance={QualitativePerformance.Perfect} title="Perfection">
           {arcaneBarrage} has multiple different conditions which involve tracking multiple buffs
           and abilities. Combining all of the above conditions will increase your rating to Perfect

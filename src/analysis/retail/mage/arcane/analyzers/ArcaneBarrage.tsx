@@ -63,6 +63,15 @@ export default class ArcaneBarrage extends Analyzer {
       activeBuffs.push(SPELLS.ARCANE_SURGE_BUFF.id);
     }
 
+    const clearcasting = this.selectedCombatant.getBuff(SPELLS.CLEARCASTING_ARCANE);
+    const recentClearcasting =
+      clearcasting && clearcasting.timestamp + 5000 > event.timestamp ? true : false;
+
+    const arcaneSurgeBuff = this.selectedCombatant.getBuff(SPELLS.ARCANE_SURGE_BUFF);
+    const surgeEnd = arcaneSurgeBuff && arcaneSurgeBuff.start + 15000;
+
+    const recentArcaneSoul = GetRelatedEvent(event, 'arcaneSoulEnd');
+
     this.barrageData.push({
       cast: event,
       mana: getManaPercentage(event),
@@ -76,6 +85,9 @@ export default class ArcaneBarrage extends Analyzer {
       arcanePulseAvail: this.spellUsable.isAvailable(TALENTS.ARCANE_PULSE_TALENT.id),
       touchCD: this.spellUsable.cooldownRemaining(TALENTS.TOUCH_OF_THE_MAGI_TALENT.id),
       health: getTargetHealthPercentage(event),
+      recentClearcasting,
+      arcaneSoulSoon: surgeEnd && surgeEnd - event.timestamp < 3000 ? true : false,
+      recentArcaneSoul: recentArcaneSoul ? true : false,
     });
 
     this.arcaneChargeTracker.clearCharges(event);
@@ -94,4 +106,7 @@ export interface ArcaneBarrageData {
   arcanePulseAvail: boolean;
   touchCD: number;
   health?: number;
+  recentClearcasting: boolean;
+  arcaneSoulSoon: boolean;
+  recentArcaneSoul: boolean;
 }
