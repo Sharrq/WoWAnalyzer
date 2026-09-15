@@ -50,6 +50,7 @@ export default class PrismaticBolt extends Analyzer {
       expired,
       cumulativePowerStacks: 0,
       salvoStacks: 0,
+      hasArcaneSoul: this.selectedCombatant.hasBuff(SPELLS.ARCANE_SOUL_BUFF),
       has4pc: this.selectedCombatant.has4PieceByTier(TIERS.MID2),
       targetsHit: damage?.length || 0,
       delay: cast ? cast.timestamp - event.timestamp : undefined,
@@ -67,7 +68,6 @@ export default class PrismaticBolt extends Analyzer {
     const salvoStacks =
       this.selectedCombatant.getBuff(SPELLS.ARCANE_SALVO_BUFF, event.timestamp)?.stacks || 0;
     const hasClearcasting = this.selectedCombatant.hasBuff(SPELLS.CLEARCASTING_ARCANE);
-    const hasArcaneSoul = this.selectedCombatant.hasBuff(SPELLS.ARCANE_SOUL_BUFF);
 
     const index = this.prismaticBolts.findIndex((pb) => pb.timestamp === buffApply.timestamp);
     this.prismaticBolts[index] = {
@@ -75,7 +75,6 @@ export default class PrismaticBolt extends Analyzer {
       cumulativePowerStacks,
       salvoStacks,
       hasClearcasting,
-      hasArcaneSoul,
     };
   }
 }
@@ -89,7 +88,7 @@ export interface PrismaticBoltCast {
   targetsHit: number;
   has4pc: boolean;
   hasClearcasting?: boolean;
-  hasArcaneSoul?: boolean;
+  hasArcaneSoul: boolean;
   cumulativePowerStacks: number;
   salvoStacks: number;
   delay?: number;
