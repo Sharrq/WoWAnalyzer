@@ -18,6 +18,7 @@ const cumulativePower = <SpellLink spell={SPELLS.CUMULATIVE_POWER_BUFF} />;
 const arcaneSoul = <SpellLink spell={SPELLS.ARCANE_SOUL_BUFF} />;
 
 export default [
+  change(date(2026, 9, 15), <>Updated {prismaticBolt} to check to see if {arcaneBarrage} was cast immediately after {prismaticBolt}.</>, Sharrq),
   change(date(2026, 9, 15), <>Fixed {arcaneSoul} buff checking for munched {prismaticBolt} procs.</>, Sharrq),
   change(date(2026, 9, 11), <>Fixed {clearcasting} buff tracking for {arcaneBarrage}.</>, Sharrq),
   change(date(2026, 9, 10), <>Fixed the {cumulativePower} and {arcaneSalvo} buff stack counts for {prismaticBolt}.</>, Sharrq),

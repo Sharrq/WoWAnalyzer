@@ -182,6 +182,20 @@ const EVENT_LINKS = createEventLinks(
     ],
   },
   {
+    spell: SPELLS.PRISMATIC_BOLT.id,
+    parentType: EventType.Cast,
+    links: [
+      link(EventType.Damage, { forwardBuffer: 2000, anyTarget: true }),
+      link(EventType.Cast, {
+        id: SPELLS.ARCANE_BARRAGE.id,
+        maxLinks: 1,
+        forwardBuffer: 500,
+        anyTarget: true,
+      }),
+      link(EventType.BeginCast, { maxLinks: 1, backwardBuffer: 3000 }),
+    ],
+  },
+  {
     spell: SPELLS.PRISMATIC_BOLT_BUFF.id,
     parentType: [EventType.ApplyBuff, EventType.RefreshBuff],
     links: [

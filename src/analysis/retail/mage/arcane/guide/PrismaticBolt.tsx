@@ -183,6 +183,14 @@ class PrismaticBoltGuide extends Analyzer {
       };
     }
 
+    if (this.isSunfury && !pb.barraged) {
+      return {
+        timestamp: pb.timestamp,
+        performance: QualitativePerformance.Ok,
+        reason: `Did not cast Arcane Barrage immediatley after Prismatic Bolt.`,
+      };
+    }
+
     // DEFAULT
     return {
       timestamp: pb.timestamp,
@@ -197,6 +205,7 @@ class PrismaticBoltGuide extends Analyzer {
     const clearcasting = <SpellLink spell={SPELLS.CLEARCASTING_ARCANE} />;
     const cumulativePower = <SpellLink spell={SPELLS.CUMULATIVE_POWER_BUFF} />;
     const arcaneSoul = <SpellLink spell={SPELLS.ARCANE_SOUL_BUFF} />;
+    const arcaneBarrage = <SpellLink spell={SPELLS.ARCANE_BARRAGE} />;
 
     const explanation = (
       <>
@@ -219,11 +228,17 @@ class PrismaticBoltGuide extends Analyzer {
           </p>
         )}
         {this.isSunfury && (
-          <p>
-            You should cast {prismaticBolt} if you have 8 or more stacks of {cumulativePower}. If
-            you do not have your 4pc tier set bonus, you can just cast {prismaticBolt} as soon as
-            you get the buff.
-          </p>
+          <>
+            <p>
+              You should cast {prismaticBolt} if you have 8 or more stacks of {cumulativePower}. If
+              you do not have your 4pc tier set bonus, you can just cast {prismaticBolt} as soon as
+              you get the buff.
+            </p>
+            <p>
+              Additionally, you should always use {arcaneBarrage} at the end of your {prismaticBolt}{' '}
+              cast.
+            </p>
+          </>
         )}
         <PerformanceTipBox performance={QualitativePerformance.Perfect} title="Perfection">
           Casting {prismaticBolt} with 8 stacks of {cumulativePower} will increase your rating to

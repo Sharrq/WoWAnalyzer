@@ -54,6 +54,7 @@ export default class PrismaticBolt extends Analyzer {
       has4pc: this.selectedCombatant.has4PieceByTier(TIERS.MID2),
       targetsHit: damage?.length || 0,
       delay: cast ? cast.timestamp - event.timestamp : undefined,
+      barraged: false,
     });
   }
 
@@ -68,6 +69,7 @@ export default class PrismaticBolt extends Analyzer {
     const salvoStacks =
       this.selectedCombatant.getBuff(SPELLS.ARCANE_SALVO_BUFF, event.timestamp)?.stacks || 0;
     const hasClearcasting = this.selectedCombatant.hasBuff(SPELLS.CLEARCASTING_ARCANE);
+    const barrage: CastEvent | undefined = GetRelatedEvent(event, EventType.Cast);
 
     const index = this.prismaticBolts.findIndex((pb) => pb.timestamp === buffApply.timestamp);
     this.prismaticBolts[index] = {
@@ -75,6 +77,7 @@ export default class PrismaticBolt extends Analyzer {
       cumulativePowerStacks,
       salvoStacks,
       hasClearcasting,
+      barraged: barrage && barrage.ability.guid === SPELLS.ARCANE_BARRAGE.id ? true : false,
     };
   }
 }
@@ -92,4 +95,5 @@ export interface PrismaticBoltCast {
   cumulativePowerStacks: number;
   salvoStacks: number;
   delay?: number;
+  barraged: boolean;
 }
